@@ -1,6 +1,6 @@
 import { google } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
-import pdf from './pdf-parser-safe';
+// import pdf from './pdf-parser-safe';
 import { app } from '~/app';
 
 export interface GoogleDriveFile {
@@ -131,8 +131,8 @@ export class GoogleDriveClient {
     try {
       switch (mimeType) {
         case 'application/pdf':
-          const pdfData = await pdf(buffer);
-          return pdfData.text;
+          // PDF parsing temporarily disabled in serverless environment
+          throw new Error('PDF processing is temporarily unavailable in production. Please use Google Docs or text files instead.');
           
         case 'text/plain':
         case 'application/vnd.google-apps.document':

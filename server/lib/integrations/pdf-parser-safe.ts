@@ -1,10 +1,15 @@
-// Safe wrapper for pdf-parse to avoid debug mode issues
-// This module imports just the core parsing function without the debug wrapper
+// Safe wrapper for pdf-parse to avoid debug mode issues in serverless environments
 
-import { createRequire } from 'node:module';
-const require = createRequire(import.meta.url);
+let pdfParse: any;
 
-// Import the core pdf-parse module directly (bypassing the debug wrapper in index.js)
-const pdfParse = require('pdf-parse/lib/pdf-parse.js');
+try {
+  // Try to import pdf-parse normally first
+  pdfParse = require('pdf-parse');
+} catch (error) {
+  // If that fails, create a mock that throws an informative error
+  pdfParse = () => {
+    throw new Error('PDF parsing is not available in this environment. Please disable RAG features that require PDF processing.');
+  };
+}
 
 export default pdfParse;

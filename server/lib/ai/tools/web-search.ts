@@ -5,7 +5,7 @@ import { app } from "~/app";
 import { updateAgentStatus } from "~/lib/slack/utils";
 import type { ExperimentalContext } from "../respond-to-message";
 
-const exa = new Exa(process.env.EXA_API_KEY);
+const exa = new Exa(process.env.EXA_API_KEY || process.env.EXASEARCH_API_KEY);
 
 export const webSearchTool = tool({
   name: "search_web",

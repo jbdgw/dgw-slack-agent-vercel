@@ -1,1 +1,18 @@
-{}
+{
+  "functions": {
+    ".output/server/index.mjs": {
+      "maxDuration": 30
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/events",
+      "headers": [
+        {
+          "key": "X-Vercel-Skip-Protection",
+          "value": "1"
+        }
+      ]
+    }
+  ]
+}

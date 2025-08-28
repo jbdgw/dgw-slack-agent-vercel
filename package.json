@@ -22,7 +22,6 @@
     "ai": "latest",
     "exa-js": "^1.9.2",
     "googleapis": "^159.0.0",
-    "pdf-parse": "^1.1.1",
     "zod": "^4.0.17"
   },
   "devDependencies": {

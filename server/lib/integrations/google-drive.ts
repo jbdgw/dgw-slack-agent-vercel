@@ -1,6 +1,5 @@
 import { google } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
-// import pdf from './pdf-parser-safe';
 import { app } from '~/app';
 
 export interface GoogleDriveFile {

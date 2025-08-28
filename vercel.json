@@ -1,13 +1,1 @@
-{
-  "headers": [
-    {
-      "source": "/api/events",
-      "headers": [
-        {
-          "key": "X-Vercel-Skip-Protection",
-          "value": "1"
-        }
-      ]
-    }
-  ]
-}
+{}

@@ -1,0 +1,12 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".output/public",
+  "functions": {
+    "api/events": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "NITRO_PRESET": "vercel"
+  }
+}

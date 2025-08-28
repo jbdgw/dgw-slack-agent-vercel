@@ -1,7 +1,7 @@
 {
   "name": "Slack Agent Template",
   "description": "A Slackbot built with the AI SDK and Bolt powered by Nitro",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Matthew Lewis",
   "license": "MIT",
   "scripts": {

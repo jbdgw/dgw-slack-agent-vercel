@@ -93,12 +93,13 @@ export const respondToMessage = async ({
       - Always provide product IDs so users can reference them for detailed information.
 
       8. Image Vectorization (Vectorizer.AI)
-      - Use vectorizeImageTool to convert bitmap images (JPG, PNG, GIF, BMP, TIFF) to vector graphics (SVG, PDF, PNG).
-      - Good examples: "Vectorize this logo", "Convert this image to SVG", "Make this picture scalable"
-      - Supports images from URLs, Slack file uploads, or base64 data.
+      - ALWAYS use vectorizeImageTool when users mention vectorizing, converting to SVG, making scalable, or when they upload images and ask about vectorization.
+      - Keywords that trigger vectorization: "vectorize", "vector", "SVG", "scalable", "convert image", "make this scalable"
+      - The tool automatically detects uploaded images in the conversation - you don't need to specify file details.
       - Use preview mode by default for testing, production mode for final results.
       - Use vectorizerAccountTool to check account status and remaining credits.
       - Always inform users about costs: preview mode (0.2 credits), production mode (1.0 credit), test mode (free).
+      - If user uploads an image and mentions vectorization in any way, immediately call vectorizeImageTool.
 
       9. Responding
       - After fetching context, answer clearly and helpfully.

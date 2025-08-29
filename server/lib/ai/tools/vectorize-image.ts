@@ -7,7 +7,7 @@ import type { ExperimentalContext } from "../respond-to-message";
 
 export const vectorizeImageTool = tool({
   name: "vectorize_image", 
-  description: "Convert bitmap images (JPG, PNG, GIF, BMP, TIFF) to vector graphics (SVG, PDF, PNG). Use this when users ask to vectorize images. The tool will automatically detect uploaded files in the conversation or accept image URLs. Always try this tool first when users mention vectorizing, converting to SVG, or making images scalable.",
+  description: "Convert bitmap images to vector graphics. Use this tool when users ask about vectorizing, converting images to SVG, making images scalable, or when they upload images and ask to process them. Handles typos like 'fectorize', 'vectorise', etc. The tool automatically detects uploaded files. ALWAYS call this tool when users mention vectorization or upload images with processing requests.",
   inputSchema: z.object({
     imageUrl: z.string().optional().describe("Optional: Specific image URL to vectorize. If not provided, tool will look for recently uploaded files in the conversation."),
     options: z.object({

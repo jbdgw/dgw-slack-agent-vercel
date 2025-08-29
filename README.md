@@ -1,150 +1,206 @@
+# Slack Agent - AI-Powered Bot
 
-# Slack Agent Template
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?demo-description=This%20is%20a%20Slack%20Agent%20template%20built%20with%20Bolt%20for%20JavaScript%20(TypeScript)%20and%20the%20Nitro%20server%20framework.&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2FSs9t7RkKlPtProrbDhZFM%2F0d11b9095ecf84c87a68fbdef6f12ad1%2FFrame__1_.png&demo-title=Slack%20Agent%20Template&demo-url=https%3A%2F%2Fgithub.com%2Fvercel-partner-solutions%2Fslack-agent-template&env=SLACK_SIGNING_SECRET%2CSLACK_BOT_TOKEN&envDescription=These%20environment%20variables%20are%20required%20to%20deploy%20your%20Slack%20app%20to%20Vercel&envLink=https%3A%2F%2Fapi.slack.com%2Fapps&from=templates&project-name=Slack%20Agent%20Template&project-names=Comma%20separated%20list%20of%20project%20names%2Cto%20match%20the%20root-directories&repository-name=slack-agent-template&repository-url=https%3A%2F%2Fgithub.com%2Fvercel-partner-solutions%2Fslack-agent-template&root-directories=List%20of%20directory%20paths%20for%20the%20directories%20to%20clone%20into%20projects&skippable-integrations=1&teamSlug=matthew-lewis-projects-c7bdd331)
+A comprehensive Slack bot built with Nitro, featuring AI-powered responses, knowledge base search, promotional product lookup, and real-time web search capabilities.
 
-This is a Slack Agent template built with Bolt for JavaScript (TypeScript) and the Nitro server framework.
+## 🚀 Features
 
-## Features
+- **🤖 AI-Powered Responses** - Intelligent conversation using OpenAI GPT-4o-mini
+- **🔍 Web Search** - Real-time information retrieval via Exa API
+- **📚 Knowledge Base** - Document search from Google Drive using vector similarity (Pinecone)
+- **🛍️ Product Search** - Promotional product lookup via Sage Connect API
+- **💬 Slack Integration** - Full context awareness with thread/channel message history
+- **🔧 Tool Orchestration** - Intelligent tool selection based on user queries
 
-This Slack agent includes:
-- **Web Search** - Real-time information retrieval
-- **RAG Pipeline** - Document knowledge base using Google Drive
-- **Sage Connect** - Promotional product research
-- **10 AI Tools** - Intelligent tool selection and orchestration
+## 🛠️ Tech Stack
 
-For complete setup instructions, see [SETUP_GUIDE.md](./SETUP_GUIDE.md).
+- **Framework**: Nitro (Universal JavaScript Server)
+- **Language**: TypeScript 5+
+- **AI**: Vercel AI SDK + OpenAI GPT-4o-mini
+- **Slack**: @slack/bolt + @vercel/slack-bolt
+- **Vector DB**: Pinecone
+- **Storage**: Google Drive
+- **Search**: Exa API
+- **Product API**: Sage Connect
+- **Deployment**: Vercel
 
-## Prerequisites
-- **Node.js 22+** - [Download here](https://nodejs.org/)
-- **Slack workspace** - You need a workspace where you have permission to install apps
-  - Create a new workspace [here](https://slack.com/create)
-  - Or use a Slack developer sandbox [here](https://api.slack.com/developer-program)
-- **Slack CLI** - [Installation guide](https://tools.slack.dev/slack-cli/guides/installing-the-slack-cli-for-mac-and-linux)
-- **ngrok** - [Download here](https://ngrok.com/downloads)
+## 📋 Prerequisites
 
-## Installation
-#### Clone and initialize Slack App
-   ```bash
-   slack create --template https://github.com/vercel-partner-solutions/slack-agent-template.git
-   ```
+- Node.js 22+
+- Slack workspace with app installation permissions
+- OpenAI API key
+- (Optional) Google Drive access for knowledge base
+- (Optional) Pinecone account for vector search
+- (Optional) Exa API key for web search
+- (Optional) Sage Connect API credentials for product search
 
-#### (Optional): Use the configure command to access a guided setup in your terminal
-```
-pnpm configure
-```
-_This command is still a work in progress. We're working with the Slack team to include this in the Slack CLI for Bolt_
+## ⚡ Quick Start
 
-#### Create a Slack App
+### 1. Installation
 
-1. Open [https://api.slack.com/apps/new](https://api.slack.com/apps/new) and choose "From an app manifest"
-2. Choose the workspace you want to install the application to
-3. Copy the contents of [manifest.json](./manifest.json) into the text box that says `*Paste your manifest code here*` (within the JSON tab) and click _Next_
-4. Review the configuration and click _Create_
-5. From the _Basic Information_ tab, copy your _Slack Signing Secret_ into your `.env` file under `SLACK_SIGNING_SECRET`
-6. Open the _Install App_ tab on the left menu. Click _Install to <Workspace_Name>_ and _Allow_ on the screen that follows
-7. On the following screen, copy the _Bot User OAuth Token_ into your `.env` file under `SLACK_BOT_TOKEN`
-
-#### Environment Setup
-1. Add your `AI_GATEWAY_API_KEY` to your `.env` file. You can get one [here](https://vercel.com/d?to=%2F%5Bteam%5D%2F%7E%2Fai%2Fapi-keys%3Futm_source%3Dai_gateway_landing_page&title=Get+an+API+Key)
-2. _(Optional)_ You can also use your `VERCEL_OIDC_TOKEN ` to authenticate with the Vercel AI Gateway. More info [here](https://vercel.com/docs/oidc#in-local-development)
-
-#### Prepare for Local Development
-
-1. In the terminal run `slack app link`
-2. Select your Slack team in the terminal
-3. Copy your App ID from the app you just created
-4. Select `Local` when prompted
-5. Open your [`config.json`](./.slack/config.json) file under `/.slack/config.json` and update your manifest source to `local`
-```json
-{
-  "manifest": {
-    "source": "local"
-  },
-  "project_id": "<project-id-added-by-slack-cli>"
-}
-```
-6. Start your local server with automatic tunneling using the `pnpm dev:tunnel` command. You can also use the generic `slack run` command if you do not want automatic tunneling and manifest updates. If prompted, select the workspace you'd like to grant access to. Select `yes` when asked _Update app settings with changes to the local manifest?_
-
-7. Open your Slack workspace and add your new Slack Agent to a channel. Your Slack Agent should respond whenever it's tagged in a message or sent a DM
-
-## Deploy to Vercel
-1. Create a new Vercel project [here](https://www.vercel.com/new) or select _Add new..._ and _project_ from the Vercel dashboard
-2. On the next screen, select *Import* next to your app repository but do *not* click _Deploy_
-3. Create a new Slack app for Production. Open [https://api.slack.com/apps/new](https://api.slack.com/apps/new) and choose "From an app manifest"
-4. Copy the contents of [manifest.json](./manifest.json) into the text box that says `*Paste your manifest code here*` (within the JSON tab) and click _Next_ and _Create_
-5. From the _Basic Information_ tab, copy your _Slack Signing Secret_ into the Environment Variables dropdown on your new Vercel project window as `SLACK_SIGNING_SECRET`
-6. On your Slack app window, open the _Install App_ tab on the left menu. Click _Install to <Workspace_Name>_ and _Allow_ on the screen that follows. Copy the _Bot User OAuth Token_
-7. Open your new Vercel project window and paste this value as `SLACK_BOT_TOKEN` in the environment variables dropdown
-8. Click _Deploy_
-9. Once the deployment is complete, click _Continue to Dashboard_
-10. Copy your production domain URL, seen under  _Domains_ on the _Overview_ tab
-11. Open your Slack app settings and click _App Manifest_
-12. Update the _url_ and _request_url_ fields of your App Manifest to the production domain. Make sure the `/api/events` path is preserved
-13. At the top of the page, you will be prompted to verify the new URL
-14. Your production app is now deployed and ready
-
-## Server Setup & Development
-
-### Local Development Server
-
-1. **Start the development server:**
-   ```bash
-   npm run dev
-   ```
-   This starts the Nitro development server on `http://localhost:3000`
-
-2. **Start ngrok tunnel for external access:**
-   ```bash
-   ngrok http 3000
-   ```
-   This creates a public URL for your local server (required for Slack webhook verification)
-
-3. **Update Slack manifest with ngrok URL:**
-   - Copy the ngrok HTTPS URL (e.g., `https://abc123.ngrok-free.app`)
-   - Update the `url` and `request_url` fields in your [`manifest.json`](./manifest.json)
-   - Set to: `https://your-ngrok-url.ngrok-free.app/api/events`
-
-### Testing the Server
-
-Test your server endpoint:
 ```bash
-curl -X POST http://localhost:3000/api/events \
-  -H "Content-Type: application/json" \
-  -d '{"test": "data"}'
+# Clone and install
+npm install
+
+# Configure (optional guided setup)
+npm run configure
 ```
 
-Expected response: `{"error":"Missing required header: x-slack-signature","type":"ReceiverAuthenticityError"}`
+### 2. Environment Setup
 
-This error is expected - it confirms the server is running and properly handling Slack authentication.
+Create a `.env` file:
 
-### Common Issues
+```env
+# Required - Slack Configuration
+SLACK_SIGNING_SECRET=your_signing_secret
+SLACK_BOT_TOKEN=xoxb-your-bot-token
 
-**PDF Parse Module Error**: If you encounter errors about `pdf-parse` trying to access `./test/data/05-versions-space.pdf`, this has been resolved with a safe wrapper module that bypasses the debug code in the pdf-parse library.
+# Required - AI Configuration  
+OPENAI_API_KEY=sk-your-openai-key
 
-**ngrok Authentication**: Make sure you've set up ngrok authentication:
+# Optional - Knowledge Base
+GOOGLE_DRIVE_FOLDER_ID=your_folder_id
+GOOGLE_SERVICE_ACCOUNT_EMAIL=your_service_account@project.iam.gserviceaccount.com
+GOOGLE_PRIVATE_KEY=your_private_key
+
+# Optional - Vector Search
+PINECONE_API_KEY=your_pinecone_key
+PINECONE_INDEX=slack-agent
+PINECONE_ENVIRONMENT=us-east-1
+
+# Optional - Web Search
+EXA_API_KEY=your_exa_api_key
+
+# Optional - Product Search
+SAGE_ACCOUNT_ID=your_account_id
+SAGE_LOGIN_ID=your_login_id
+SAGE_API_KEY=your_sage_api_key
+SAGE_API_URL=https://www.promoplace.com/ws/ws.dll/ConnectAPI
+SAGE_API_VERSION=130
+```
+
+### 3. Slack App Setup
+
+1. Create app at [api.slack.com/apps](https://api.slack.com/apps)
+2. Use the provided [manifest.json](./manifest.json) or configure manually:
+   - **OAuth Scopes**: `app_mentions:read`, `chat:write`, `channels:history`, `groups:history`, `im:history`, `mpim:history`
+   - **Event Subscriptions**: `app_mention`, `message.channels`, `message.groups`, `message.im`, `message.mpim`
+3. Install to workspace and get bot token
+
+### 4. Development
+
 ```bash
-ngrok authtoken YOUR_NGROK_TOKEN
+# Local development
+npm run dev
+
+# With tunneling for Slack testing
+npm run dev:tunnel
 ```
 
-**Multiple ngrok Sessions**: If you get "authentication failed: Your account is limited to 1 simultaneous ngrok agent sessions", kill existing ngrok processes:
+### 5. Deployment
+
 ```bash
-pkill -f ngrok
+# Deploy to Vercel
+vercel --prod
+
+# Update Slack webhook URL to: https://your-app.vercel.app/api/slack-verify
 ```
 
-## Project Structure
+## 🎯 Usage Examples
 
-### [`manifest.json`](./manifest.json)
+### Basic Queries
+- `@bot What's the weather like today?` (web search)
+- `@bot Tell me about our vacation policy` (knowledge base)
+- `@bot Find promotional water bottles` (product search)
 
-[`manifest.json`](./manifest.json) is a configuration for Slack apps. With a manifest, you can create an app with a pre-defined configuration, or adjust the configuration of an existing app.
+### Advanced Features
+- **Context Awareness**: Bot reads thread/channel history for context
+- **Smart Tool Selection**: Automatically chooses the right tool for each query
+- **Status Updates**: Shows what the bot is doing in real-time
+- **Error Handling**: Graceful fallbacks for all operations
 
-### [`/server/app.ts`](./server/app.ts)
+## 📁 Project Structure
 
-[`/app.ts`](./server/app.ts) is the entry point of the application. This file is kept minimal and primarily serves to route inbound requests.
+```
+├── server/                     # Nitro server
+│   ├── api/                   # API endpoints
+│   │   ├── events.post.ts     # Alternative Slack handler
+│   │   └── slack-verify.post.ts # Main Slack webhook (recommended)
+│   ├── app.ts                 # Slack Bolt app configuration
+│   ├── lib/                   # Core business logic
+│   │   ├── ai/                # AI functionality
+│   │   │   ├── respond-to-message.ts # Main response handler
+│   │   │   └── tools/         # AI tools (web search, knowledge, etc.)
+│   │   ├── integrations/      # External service integrations
+│   │   └── slack/             # Slack utilities
+│   └── listeners/             # Slack event listeners
+├── scripts/                   # Development utilities
+├── .env                      # Environment variables
+├── manifest.json             # Slack app manifest
+├── package.json              # Dependencies
+└── README.md                 # This file
+```
 
-### [`/server/listeners`](./server/listeners)
+## 🔧 Development Commands
 
-Every incoming request is routed to a "listener". Inside this directory, we group each listener based on the Slack Platform feature used, so [`/listeners/shortcuts`](./server/listeners/shortcuts/index.ts) handles incoming [Shortcuts](https://api.slack.com/interactivity/shortcuts) requests, [`/listeners/views`](./server/listeners/views/index.ts) handles [View submissions](https://api.slack.com/reference/interaction-payloads/views#view_submission) and so on.
+```bash
+# Development
+npm run dev                    # Start dev server
+npm run dev:tunnel            # Start with ngrok tunneling
+npm run build                 # Build for production
+npm run preview               # Preview production build
 
-### [`/server`](./server)
+# Maintenance
+npm run lint                  # Run linter
+npm run lint:fix              # Fix lint issues
+npm run configure             # Interactive setup wizard
 
-This is your nitro server directory. Inside you have an [`api`](./server/api) folder that contains a [`events.post.ts`](./server/api/events.post.ts) file. This matches the request URL's defined in your [`manifest.json`](./manifest.json) file. Nitro uses file based routing for incoming requests. You can learn more about this [here](https://nitro.build/guide/routing).
+# Deployment
+vercel                        # Deploy to Vercel
+vercel --prod                 # Deploy to production
+vercel logs                   # View deployment logs
+```
+
+## 🚨 Troubleshooting
+
+### Slack Verification Issues
+- Ensure webhook URL ends with `/api/slack-verify`
+- Check environment variables are set in deployment
+- Verify no circular dependency errors in logs
+
+### Bot Not Responding
+- Check OpenAI API key validity and credits
+- Review Vercel deployment logs
+- Verify bot permissions in Slack workspace
+
+### Knowledge Search Not Working
+- Confirm Google Service Account has Drive access
+- Check Pinecone index exists and is accessible
+- Try refreshing knowledge base
+
+### Product Search Issues
+- Verify Sage Connect API credentials
+- Check API endpoint URL and version
+- Review rate limits and quotas
+
+## 📚 Documentation
+
+- [CLAUDE.md](./claude.md) - Detailed technical documentation
+- [SETUP_GUIDE.md](./SETUP_GUIDE.md) - Comprehensive setup instructions
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📄 License
+
+MIT License - see [LICENSE](./LICENSE) file for details
+
+---
+
+**Current Status**: ✅ Production Ready  
+**Deployment**: Vercel  
+**Last Updated**: August 29, 2025

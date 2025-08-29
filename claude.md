@@ -1,53 +1,103 @@
-# CLAUDE.md - Next.js + Vercel AI SDK + Anthropic Claude
+# CLAUDE.md - Slack Agent with Nitro + AI SDK
 
 ## Project Overview
 
-This is a Next.js application using the App Router with Anthropic's Claude models integrated via the Vercel AI SDK. The project leverages TypeScript for type safety and implements AI-powered features with streaming capabilities.
+This is a Slack bot application built with Nitro framework and integrated with multiple AI services and APIs. The bot provides intelligent responses, promotional product search, knowledge base queries, and web search capabilities.
 
 ## Tech Stack
 
-- **Framework**: Next.js 15+ with App Router
+- **Framework**: Nitro (Universal JavaScript Server)
 - **Language**: TypeScript 5+
-- **AI Integration**: Vercel AI SDK (@ai-sdk/anthropic)
-- **Models**: Claude 4 Opus/Sonnet, Claude 3.7 Sonnet, Claude 3.5 Sonnet
-- **Styling**: Tailwind CSS
-- **Package Manager**: pnpm (preferred) or npm
+- **AI Integration**: Vercel AI SDK with OpenAI GPT-4o-mini
+- **Slack Integration**: @slack/bolt with @vercel/slack-bolt
+- **Package Manager**: npm
 - **Deployment**: Vercel
+- **Vector Database**: Pinecone
+- **Document Storage**: Google Drive
+- **Product Catalog**: Sage Connect API
+- **Web Search**: Exa API
 
 ## Project Structure
 
 ```
 .
-├── app/                        # Next.js App Router structure
-│   ├── api/                   # API routes
-│   │   ├── chat/              # Chat endpoint
-│   │   │   └── route.ts       # Main chat handler
-│   │   ├── completion/        # Text completion endpoint
-│   │   │   └── route.ts       
-│   │   └── generate/          # Object generation endpoint
-│   │       └── route.ts       
-│   ├── layout.tsx             # Root layout
-│   ├── page.tsx               # Homepage
-│   └── globals.css            # Global styles
-├── components/                 # React components
-│   ├── ui/                    # UI components
-│   │   ├── chat.tsx          # Chat interface
-│   │   ├── message.tsx       # Message component
-│   │   └── input.tsx         # Input components
-│   └── providers/            # Context providers
-├── lib/                       # Utility functions
-│   ├── ai/                   # AI-related utilities
-│   │   ├── models.ts         # Model configurations
-│   │   └── prompts.ts        # Prompt templates
-│   └── utils.ts              # General utilities
-├── hooks/                     # Custom React hooks
-│   └── use-chat-enhanced.ts  # Enhanced chat hook
-├── types/                     # TypeScript type definitions
-│   └── ai.ts                 # AI-related types
-├── .env.local                # Environment variables
-├── next.config.js            # Next.js configuration
-├── tailwind.config.ts        # Tailwind configuration
-└── tsconfig.json             # TypeScript configuration
+├── server/                      # Nitro server structure
+│   ├── api/                    # API endpoints
+│   │   ├── events.post.ts      # Main Slack events handler
+│   │   ├── slack-verify.post.ts # Verified Slack webhook endpoint
+│   │   └── slack-events.ts     # Alternative events handler
+│   ├── app.ts                  # Slack Bolt app configuration
+│   ├── lib/                    # Business logic
+│   │   ├── ai/                 # AI-related functionality
+│   │   │   ├── respond-to-message.ts # Main AI response handler
+│   │   │   └── tools/          # AI tools
+│   │   │       ├── web-search.ts
+│   │   │       ├── knowledge-search.ts
+│   │   │       ├── sage-connect.ts
+│   │   │       ├── vectorize-image.ts
+│   │   │       └── ...
+│   │   ├── integrations/       # External service integrations
+│   │   │   ├── google-drive.ts
+│   │   │   ├── pinecone.ts
+│   │   │   ├── sage-connect.ts
+│   │   │   ├── vectorizer-ai.ts
+│   │   │   └── document-processor.ts
+│   │   └── slack/              # Slack utilities
+│   │       └── utils.ts
+│   ├── listeners/              # Slack event listeners
+│   │   ├── events/
+│   │   ├── messages/
+│   │   ├── commands/
+│   │   └── ...
+│   └── routes/                 # Additional HTTP routes
+├── scripts/                    # Development scripts
+│   ├── configure.ts            # Setup configuration
+│   └── dev.tunnel.ts          # Local tunneling for development
+├── .env                       # Environment variables
+├── package.json               # Dependencies and scripts
+├── nitro.config.ts           # Nitro configuration
+├── tsconfig.json             # TypeScript configuration
+└── vercel.json               # Vercel deployment config
+```
+
+## Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+# Slack Configuration
+SLACK_SIGNING_SECRET=your_signing_secret
+SLACK_BOT_TOKEN=xoxb-your-bot-token
+
+# AI Configuration
+OPENAI_API_KEY=sk-your-openai-key
+
+# Google Drive Integration
+GOOGLE_DRIVE_FOLDER_ID=your_folder_id
+GOOGLE_SERVICE_ACCOUNT_EMAIL=your_service_account@project.iam.gserviceaccount.com
+GOOGLE_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----
+
+# Vector Database
+PINECONE_API_KEY=your_pinecone_key
+PINECONE_INDEX=slack-agent
+PINECONE_ENVIRONMENT=us-east-1
+
+# Web Search
+EXA_API_KEY=your_exa_api_key
+
+# Sage Connect (Product Catalog)
+SAGE_ACCOUNT_ID=your_account_id
+SAGE_LOGIN_ID=your_login_id
+SAGE_API_KEY=your_sage_api_key
+SAGE_API_URL=https://www.promoplace.com/ws/ws.dll/ConnectAPI
+SAGE_API_VERSION=130
+
+# Vectorizer.ai (Image Vectorization)
+VECTORIZER_AI_API_ID=your_api_id
+VECTORIZER_AI_API_SECRET=your_api_secret
+
+# Optional: AI Gateway
+AI_GATEWAY_API_KEY=your_ai_gateway_key
 ```
 
 ## Setup Instructions
@@ -55,386 +105,186 @@ This is a Next.js application using the App Router with Anthropic's Claude model
 ### 1. Installation
 
 ```bash
-# Create new Next.js app (if starting fresh)
-pnpm create next-app@latest my-ai-app --typescript --tailwind --app
+# Clone and install dependencies
+npm install
 
-# Install Vercel AI SDK and Anthropic provider
-pnpm add ai @ai-sdk/anthropic @ai-sdk/react
-
-# Install additional dependencies (optional)
-pnpm add zod # for structured output validation
-pnpm add react-markdown remark-gfm # for markdown rendering
+# Configure the application
+npm run configure
 ```
 
-### 2. Environment Variables
+### 2. Slack App Setup
 
-Create a `.env.local` file in the root directory:
+1. Create a new Slack app at https://api.slack.com/apps
+2. Configure OAuth & Permissions:
+   - Add bot token scopes: `app_mentions:read`, `chat:write`, `channels:history`, `groups:history`, `im:history`, `mpim:history`
+3. Enable Event Subscriptions:
+   - Request URL: `https://your-deployment-url.vercel.app/api/slack-verify`
+   - Subscribe to: `app_mention`, `message.channels`, `message.groups`, `message.im`, `message.mpim`
+4. Install app to workspace and get bot token
 
-```env
-# Required
-ANTHROPIC_API_KEY=your_api_key_here
+### 3. Development
 
-# Optional - for specific configurations
-ANTHROPIC_BASE_URL=https://api.anthropic.com/v1
+```bash
+# Start development server
+npm run dev
+
+# For local Slack testing with tunneling
+npm run dev:tunnel
 ```
 
-### 3. Model Configuration
+### 4. Deployment
 
-Available Claude models:
-- `claude-4-opus-20250514` - Most powerful, best for complex tasks
-- `claude-4-sonnet-20250514` - Balanced performance and cost
-- `claude-3-7-sonnet-20250219` - Extended reasoning capabilities
-- `claude-3-5-sonnet-20241022` - Good balance, supports PDFs
-- `claude-3-5-sonnet-20240620` - Previous generation
-- `claude-3-5-haiku-20241022` - Fastest, most cost-effective
+```bash
+# Deploy to Vercel
+vercel --prod
 
-## Implementation Examples
-
-### Basic Chat Route Handler
-
-```typescript
-// app/api/chat/route.ts
-import { anthropic } from '@ai-sdk/anthropic';
-import { streamText, convertToModelMessages, type UIMessage } from 'ai';
-
-export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
-
-  const result = streamText({
-    model: anthropic('claude-3-5-sonnet-20241022'),
-    messages: convertToModelMessages(messages),
-    system: 'You are a helpful AI assistant.',
-    temperature: 0.7,
-    maxTokens: 2000,
-  });
-
-  return result.toUIMessageStreamResponse();
-}
+# Update Slack app webhook URL with new deployment URL
 ```
 
-### Advanced Features
+## Key Features
 
-#### With Reasoning (Claude 4)
+### 1. AI-Powered Responses
+- Uses OpenAI GPT-4o-mini for intelligent conversation
+- Context-aware responses using Slack message history
+- Automatic status updates during processing
 
-```typescript
-// app/api/chat/route.ts
-import { anthropic, AnthropicProviderOptions } from '@ai-sdk/anthropic';
-import { streamText, convertToModelMessages, type UIMessage } from 'ai';
+### 2. Knowledge Base Search
+- Searches internal documents stored in Google Drive
+- Automatic document processing and chunking
+- Vector similarity search using Pinecone
+- Supports PDFs and Google Docs
 
-export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
+### 3. Promotional Product Search
+- Integration with Sage Connect API
+- Product search, details, and inventory checking
+- Category and theme exploration
 
-  const result = streamText({
-    model: anthropic('claude-4-opus-20250514'),
-    messages: convertToModelMessages(messages),
-    headers: {
-      'anthropic-beta': 'interleaved-thinking-2025-05-14',
-    },
-    providerOptions: {
-      anthropic: {
-        thinking: { type: 'enabled', budgetTokens: 15000 },
-      } satisfies AnthropicProviderOptions,
-    },
-  });
+### 4. Web Search
+- Real-time web search using Exa API
+- Current events and news lookup
+- Domain-specific search capabilities
 
-  return result.toUIMessageStreamResponse({
-    sendReasoning: true,
-  });
-}
-```
+### 5. Slack Integration
+- App mentions and direct messages
+- Thread and channel message context
+- Chat title updates
+- Status indicators
 
-#### With Tools
+## API Endpoints
 
-```typescript
-// app/api/chat/route.ts
-import { anthropic } from '@ai-sdk/anthropic';
-import { streamText, convertToModelMessages, tool } from 'ai';
-import { z } from 'zod';
+### `/api/slack-verify` (POST)
+- **Primary webhook endpoint**
+- Handles Slack URL verification challenges
+- Processes all Slack events (messages, mentions, etc.)
+- Uses dynamic imports to avoid circular dependencies
 
-export async function POST(req: Request) {
-  const { messages } = await req.json();
+### `/api/events` (POST)
+- **Alternative events endpoint**
+- Similar functionality to slack-verify
+- Backup endpoint if needed
 
-  const result = streamText({
-    model: anthropic('claude-3-5-sonnet-20241022'),
-    messages: convertToModelMessages(messages),
-    tools: {
-      getWeather: tool({
-        description: 'Get current weather for a location',
-        parameters: z.object({
-          location: z.string().describe('City name'),
-        }),
-        execute: async ({ location }) => {
-          // Implement weather API call
-          return { temperature: 72, condition: 'sunny' };
-        },
-      }),
-    },
-    stopWhen: ({ steps }) => steps.length >= 5, // Multi-step tool calls
-  });
+## AI Tools Available
 
-  return result.toUIMessageStreamResponse();
-}
-```
+1. **Web Search Tool** - Search current web information
+2. **Knowledge Search Tool** - Query internal knowledge base
+3. **Sage Connect Tools** - Product catalog operations
+4. **Slack Context Tools** - Retrieve message history
+5. **Status Tools** - Update agent status and chat titles
 
-#### Structured Output
+## Development Commands
 
-```typescript
-// app/api/generate/route.ts
-import { anthropic } from '@ai-sdk/anthropic';
-import { generateObject } from 'ai';
-import { z } from 'zod';
+```bash
+# Development
+npm run dev                 # Start dev server
+npm run dev:tunnel         # Start with tunneling for Slack
+npm run build              # Build for production
+npm run preview            # Preview production build
+npm run configure          # Run setup wizard
 
-const schema = z.object({
-  title: z.string(),
-  summary: z.string(),
-  tags: z.array(z.string()),
-  sentiment: z.enum(['positive', 'neutral', 'negative']),
-});
+# Code Quality
+npm run lint               # Run linter
+npm run lint:fix           # Fix lint issues
 
-export async function POST(req: Request) {
-  const { prompt } = await req.json();
-
-  const result = await generateObject({
-    model: anthropic('claude-3-5-sonnet-20241022'),
-    schema,
-    prompt,
-  });
-
-  return Response.json(result.object);
-}
-```
-
-### Client-Side Integration
-
-```tsx
-// app/page.tsx
-'use client';
-
-import { useChat } from '@ai-sdk/react';
-import { useState } from 'react';
-
-export default function ChatPage() {
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-    api: '/api/chat',
-  });
-
-  return (
-    <div className="flex flex-col h-screen max-w-4xl mx-auto p-4">
-      <div className="flex-1 overflow-y-auto space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`p-4 rounded-lg ${
-              message.role === 'user' 
-                ? 'bg-blue-100 ml-auto max-w-2xl' 
-                : 'bg-gray-100 mr-auto max-w-2xl'
-            }`}
-          >
-            <p className="font-semibold">
-              {message.role === 'user' ? 'You' : 'Claude'}
-            </p>
-            <p className="mt-1">{message.content}</p>
-          </div>
-        ))}
-      </div>
-      
-      <form onSubmit={handleSubmit} className="mt-4 flex gap-2">
-        <input
-          value={input}
-          onChange={handleInputChange}
-          placeholder="Ask Claude something..."
-          className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          disabled={isLoading}
-        />
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
-        >
-          {isLoading ? 'Sending...' : 'Send'}
-        </button>
-      </form>
-    </div>
-  );
-}
-```
-
-## Best Practices
-
-### 1. Error Handling
-
-Always implement proper error handling:
-
-```typescript
-try {
-  const result = await streamText({
-    model: anthropic('claude-3-5-sonnet-20241022'),
-    messages,
-  });
-  return result.toUIMessageStreamResponse();
-} catch (error) {
-  console.error('AI request failed:', error);
-  return new Response('Failed to process request', { status: 500 });
-}
-```
-
-### 2. Rate Limiting
-
-Implement rate limiting for production:
-
-```typescript
-import { Ratelimit } from '@upstash/ratelimit';
-import { Redis } from '@upstash/redis';
-
-const ratelimit = new Ratelimit({
-  redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(10, '10 s'),
-});
-```
-
-### 3. Prompt Engineering
-
-- Be explicit and clear in instructions
-- Provide context and examples when needed
-- Use system messages for consistent behavior
-- Test prompts thoroughly before production
-
-### 4. Performance Optimization
-
-- Use streaming for better UX
-- Implement caching for repeated queries
-- Choose appropriate model based on task complexity
-- Set reasonable `maxTokens` limits
-
-### 5. Security
-
-- Never expose API keys in client-side code
-- Validate and sanitize all user inputs
-- Implement authentication for production apps
-- Use environment variables for sensitive data
-
-## Common Patterns
-
-### Conversation Memory
-
-```typescript
-// Maintain conversation context across sessions
-const conversationHistory = await getConversationFromDB(userId);
-const messages = [...conversationHistory, newMessage];
-```
-
-### Streaming with Progress
-
-```typescript
-const result = streamText({
-  model: anthropic('claude-3-5-sonnet-20241022'),
-  messages,
-  onChunk: ({ chunk }) => {
-    // Handle streaming chunks for progress
-    console.log('Received chunk:', chunk);
-  },
-  onFinish: ({ text, usage }) => {
-    // Log usage for monitoring
-    console.log('Tokens used:', usage);
-  },
-});
-```
-
-### Multi-Modal Input (Images/PDFs)
-
-```typescript
-// For models that support it (e.g., claude-3-5-sonnet-20241022)
-const result = await generateText({
-  model: anthropic('claude-3-5-sonnet-20241022'),
-  messages: [
-    {
-      role: 'user',
-      content: [
-        { type: 'text', text: 'Analyze this document' },
-        {
-          type: 'file',
-          data: fs.readFileSync('./document.pdf'),
-          mimeType: 'application/pdf',
-        },
-      ],
-    },
-  ],
-});
+# Deployment
+vercel                     # Deploy to Vercel
+vercel --prod             # Deploy to production
+vercel logs               # View deployment logs
 ```
 
 ## Deployment Checklist
 
 - [ ] Environment variables configured in Vercel
-- [ ] API routes properly secured
-- [ ] Rate limiting implemented
-- [ ] Error boundaries added
-- [ ] Loading states implemented
-- [ ] Accessibility features added
-- [ ] Mobile responsiveness tested
-- [ ] Performance optimized
-- [ ] Monitoring/logging setup
-- [ ] Cost controls in place
+- [ ] Slack app webhook URL updated
+- [ ] Google Service Account credentials added
+- [ ] Pinecone index created and configured
+- [ ] Sage Connect API access verified
+- [ ] Exa API key configured
+- [ ] OpenAI API key with sufficient credits
+- [ ] Knowledge base documents processed
+- [ ] Bot permissions configured in Slack workspace
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Timeout errors on Vercel**
-   - Increase function timeout in `vercel.json`
-   - Use streaming responses
-   - Consider edge functions for longer operations
+1. **Slack URL Verification Failed**
+   - Ensure webhook endpoint returns challenge as plain text
+   - Check that environment variables are set in Vercel
+   - Verify no circular dependencies in imports
 
-2. **API key not working**
-   - Verify key is correct in `.env.local`
-   - Check API key permissions
-   - Ensure no extra whitespace
+2. **Bot Not Responding**
+   - Check Vercel deployment logs: `vercel logs`
+   - Verify OpenAI API key is valid and has credits
+   - Ensure bot has proper permissions in Slack
 
-3. **Streaming not working**
-   - Verify client supports streaming
-   - Check response headers
-   - Use proper streaming utilities from AI SDK
+3. **Knowledge Search Not Working**
+   - Verify Google Service Account has access to Drive folder
+   - Check Pinecone index exists and is accessible
+   - Run knowledge refresh if documents were recently added
 
-## Resources
+4. **Product Search Issues**
+   - Verify Sage Connect API credentials
+   - Check API endpoint URL and version
+   - Review API rate limits
 
-- [Vercel AI SDK Documentation](https://ai-sdk.dev)
-- [Anthropic API Documentation](https://docs.anthropic.com)
-- [Next.js App Router Guide](https://nextjs.org/docs/app)
-- [AI SDK Examples](https://ai-sdk.dev/examples)
-- [Claude Model Comparison](https://docs.anthropic.com/en/docs/about-claude/models)
+### Development Tips
 
-## Quick Commands
+1. **Local Testing**
+   - Use `npm run dev:tunnel` for local Slack testing
+   - Test webhook verification before deploying
+   - Check console logs for debugging information
 
-```bash
-# Development
-pnpm dev                 # Start dev server
-pnpm build              # Build for production
-pnpm lint               # Run linter
-pnpm type-check         # Check TypeScript
+2. **Deployment**
+   - Each Vercel deployment creates a new URL
+   - Update Slack webhook URL after each deployment
+   - Use environment variables for all sensitive data
 
-# Testing
-pnpm test               # Run tests
-pnpm test:watch         # Watch mode
+3. **Performance**
+   - Vector search responses cached automatically
+   - Web search uses live crawling for fresh results
+   - AI responses stream for better user experience
 
-# Deployment
-vercel                  # Deploy to Vercel
-vercel --prod          # Deploy to production
-```
+## Architecture Notes
 
-## Notes for AI Assistants
+### Circular Dependency Prevention
+- All integration files use `console` logging instead of `app.logger`
+- API endpoints use dynamic imports for Slack app initialization
+- Dependencies loaded lazily after verification challenges
 
-When working on this project:
-1. Always use TypeScript with proper types
-2. Follow Next.js App Router conventions
-3. Implement streaming for better UX
-4. Handle errors gracefully
-5. Consider cost implications of model choices
-6. Test thoroughly before suggesting changes
-7. Prioritize security and performance
-8. Document all API endpoints
-9. Use environment variables for configuration
-10. Follow the established project structure
+### Error Handling
+- Graceful fallbacks for all external API calls
+- User-friendly error messages in Slack
+- Comprehensive logging for debugging
+
+### Security
+- All API keys stored as environment variables
+- Slack signature verification enabled
+- No sensitive data in client-side code
 
 ---
 
-Last Updated: 2025
+**Current Deployment URL**: `https://dgw-slack-vercel-agent-qzaf0ae9o-jordans-projects-608b7fba.vercel.app`
+**Slack Webhook**: `https://dgw-slack-vercel-agent-qzaf0ae9o-jordans-projects-608b7fba.vercel.app/api/slack-verify`
+
+Last Updated: August 29, 2025
 Version: 1.0.0

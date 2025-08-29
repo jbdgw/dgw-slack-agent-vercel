@@ -1,6 +1,5 @@
 import { GoogleDriveClient, type ProcessedDocument } from './google-drive';
 import { PineconeClient } from './pinecone';
-import { app } from '~/app';
 
 export interface DocumentProcessingResult {
   success: boolean;
@@ -29,7 +28,7 @@ export class DocumentProcessor {
     } catch (error) {
       // If index doesn't exist, try to create it
       if (error instanceof Error && error.message.includes('not found')) {
-        app.logger.info('Pinecone index not found, creating new index...');
+        console.info('Pinecone index not found, creating new index...');
         await this.pinecone.createIndex();
       } else {
         throw error;
@@ -44,7 +43,7 @@ export class DocumentProcessor {
       throw new Error('No Google Drive folder ID provided. Set GOOGLE_DRIVE_FOLDER_ID environment variable or pass folderId parameter.');
     }
 
-    app.logger.info(`Starting document processing for folder: ${folderIdToProcess}`);
+    console.info(`Starting document processing for folder: ${folderIdToProcess}`);
 
     const result: DocumentProcessingResult = {
       success: false,
@@ -64,7 +63,7 @@ export class DocumentProcessor {
       result.totalFiles = processedDocuments.length;
 
       if (processedDocuments.length === 0) {
-        app.logger.warn('No documents found to process');
+        console.warn('No documents found to process');
         result.success = true;
         return result;
       }
@@ -81,7 +80,7 @@ export class DocumentProcessor {
           result.processedFiles++;
           result.totalChunks += doc.chunks.length;
           
-          app.logger.info(`Successfully indexed ${doc.fileName} (${doc.chunks.length} chunks)`);
+          console.info(`Successfully indexed ${doc.fileName} (${doc.chunks.length} chunks)`);
         } catch (error) {
           result.failedFiles++;
           const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -90,14 +89,14 @@ export class DocumentProcessor {
             error: errorMessage,
           });
           
-          app.logger.error(`Failed to index ${doc.fileName}:`, error);
+          console.error(`Failed to index ${doc.fileName}:`, error);
         }
       }
 
       result.success = result.processedFiles > 0;
       
       // Log summary
-      app.logger.info(`Document processing complete:`, {
+      console.info(`Document processing complete:`, {
         totalFiles: result.totalFiles,
         processedFiles: result.processedFiles,
         failedFiles: result.failedFiles,
@@ -107,7 +106,7 @@ export class DocumentProcessor {
       return result;
 
     } catch (error) {
-      app.logger.error('Document processing failed:', error);
+      console.error('Document processing failed:', error);
       throw error;
     }
   }
@@ -174,7 +173,7 @@ export class DocumentProcessor {
       return { results, summary };
 
     } catch (error) {
-      app.logger.error('Knowledge search failed:', error);
+      console.error('Knowledge search failed:', error);
       throw error;
     }
   }
@@ -195,13 +194,13 @@ export class DocumentProcessor {
         indexFullness: stats.indexFullness || 0,
       };
     } catch (error) {
-      app.logger.error('Failed to get index stats:', error);
+      console.error('Failed to get index stats:', error);
       throw error;
     }
   }
 
   async refreshKnowledge(folderId?: string): Promise<DocumentProcessingResult> {
-    app.logger.info('Refreshing knowledge base...');
+    console.info('Refreshing knowledge base...');
     
     try {
       // Clear existing index
@@ -211,7 +210,7 @@ export class DocumentProcessor {
       // Re-process documents
       return await this.processGoogleDriveFolder(folderId);
     } catch (error) {
-      app.logger.error('Failed to refresh knowledge base:', error);
+      console.error('Failed to refresh knowledge base:', error);
       throw error;
     }
   }

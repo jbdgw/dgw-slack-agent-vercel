@@ -1,6 +1,5 @@
 import { google } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
-import { app } from '~/app';
 
 export interface GoogleDriveFile {
   id: string;
@@ -54,7 +53,7 @@ export class GoogleDriveClient {
     if (this.auth) {
       this.drive = google.drive({ version: 'v3', auth: this.auth });
     } else {
-      app.logger.warn('Google Drive authentication not configured. Set GOOGLE_SERVICE_ACCOUNT_EMAIL and GOOGLE_PRIVATE_KEY environment variables.');
+      console.warn('Google Drive authentication not configured. Set GOOGLE_SERVICE_ACCOUNT_EMAIL and GOOGLE_PRIVATE_KEY environment variables.');
     }
   }
 
@@ -92,7 +91,7 @@ export class GoogleDriveClient {
       }));
 
     } catch (error) {
-      app.logger.error('Failed to list Google Drive files:', error);
+      console.error('Failed to list Google Drive files:', error);
       throw new Error(`Failed to list Google Drive files: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -121,7 +120,7 @@ export class GoogleDriveClient {
 
       return Buffer.from(response.data);
     } catch (error) {
-      app.logger.error(`Failed to download file ${fileId}:`, error);
+      console.error(`Failed to download file ${fileId}:`, error);
       throw new Error(`Failed to download file: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -140,14 +139,14 @@ export class GoogleDriveClient {
         case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
           // For DOCX files, you'd need additional libraries like mammoth
           // For now, we'll just return a placeholder
-          app.logger.warn(`DOCX processing not implemented for ${fileName}. Install mammoth package for full support.`);
+          console.warn(`DOCX processing not implemented for ${fileName}. Install mammoth package for full support.`);
           return `[DOCX Document: ${fileName} - Content extraction not yet implemented]`;
           
         default:
           throw new Error(`Unsupported file type: ${mimeType}`);
       }
     } catch (error) {
-      app.logger.error(`Failed to extract text from ${fileName}:`, error);
+      console.error(`Failed to extract text from ${fileName}:`, error);
       throw new Error(`Failed to extract text: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -205,7 +204,7 @@ export class GoogleDriveClient {
   }
 
   async processDocument(file: GoogleDriveFile): Promise<ProcessedDocument> {
-    app.logger.debug(`Processing document: ${file.name} (${file.id})`);
+    console.debug(`Processing document: ${file.name} (${file.id})`);
     
     try {
       // Download file content
@@ -233,16 +232,16 @@ export class GoogleDriveClient {
       };
       
     } catch (error) {
-      app.logger.error(`Failed to process document ${file.name}:`, error);
+      console.error(`Failed to process document ${file.name}:`, error);
       throw error;
     }
   }
 
   async processFolder(folderId: string): Promise<ProcessedDocument[]> {
-    app.logger.info(`Processing Google Drive folder: ${folderId}`);
+    console.info(`Processing Google Drive folder: ${folderId}`);
     
     const files = await this.listFilesInFolder(folderId);
-    app.logger.info(`Found ${files.length} files to process`);
+    console.info(`Found ${files.length} files to process`);
     
     const processedDocuments: ProcessedDocument[] = [];
     
@@ -250,14 +249,14 @@ export class GoogleDriveClient {
       try {
         const processed = await this.processDocument(file);
         processedDocuments.push(processed);
-        app.logger.debug(`Successfully processed: ${file.name}`);
+        console.debug(`Successfully processed: ${file.name}`);
       } catch (error) {
-        app.logger.error(`Failed to process ${file.name}, skipping:`, error);
+        console.error(`Failed to process ${file.name}, skipping:`, error);
         // Continue with other files even if one fails
       }
     }
     
-    app.logger.info(`Successfully processed ${processedDocuments.length} of ${files.length} files`);
+    console.info(`Successfully processed ${processedDocuments.length} of ${files.length} files`);
     return processedDocuments;
   }
 }

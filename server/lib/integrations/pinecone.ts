@@ -1,5 +1,4 @@
 import { Pinecone } from '@pinecone-database/pinecone';
-import { app } from '~/app';
 import type { DocumentChunk } from './google-drive';
 
 export interface PineconeMetadata {
@@ -45,16 +44,16 @@ export class PineconeClient {
       // Test the connection by getting index stats
       await this.index.describeIndexStats();
       
-      app.logger.info(`Connected to Pinecone index: ${this.indexName}`);
+      console.info(`Connected to Pinecone index: ${this.indexName}`);
     } catch (error) {
-      app.logger.error(`Failed to connect to Pinecone index ${this.indexName}:`, error);
+      console.error(`Failed to connect to Pinecone index ${this.indexName}:`, error);
       throw new Error(`Pinecone initialization failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
   async createIndex(dimension: number = 1536): Promise<void> {
     try {
-      app.logger.info(`Creating Pinecone index: ${this.indexName}`);
+      console.info(`Creating Pinecone index: ${this.indexName}`);
       
       await this.pinecone.createIndex({
         name: this.indexName,
@@ -69,7 +68,7 @@ export class PineconeClient {
       });
 
       // Wait for index to be ready
-      app.logger.info('Waiting for index to be ready...');
+      console.info('Waiting for index to be ready...');
       let ready = false;
       while (!ready) {
         await new Promise(resolve => setTimeout(resolve, 5000));
@@ -77,17 +76,17 @@ export class PineconeClient {
           const indexDescription = await this.pinecone.describeIndex(this.indexName);
           ready = indexDescription.status?.ready === true;
           if (!ready) {
-            app.logger.info('Index still initializing...');
+            console.info('Index still initializing...');
           }
         } catch (error) {
-          app.logger.debug('Waiting for index to be available...');
+          console.debug('Waiting for index to be available...');
         }
       }
 
       this.index = this.pinecone.Index(this.indexName);
-      app.logger.info(`Successfully created index: ${this.indexName}`);
+      console.info(`Successfully created index: ${this.indexName}`);
     } catch (error) {
-      app.logger.error(`Failed to create index ${this.indexName}:`, error);
+      console.error(`Failed to create index ${this.indexName}:`, error);
       throw error;
     }
   }
@@ -114,7 +113,7 @@ export class PineconeClient {
       const data = await response.json();
       return data.data[0].embedding;
     } catch (error) {
-      app.logger.error('Failed to generate embedding:', error);
+      console.error('Failed to generate embedding:', error);
       throw new Error(`Embedding generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -124,7 +123,7 @@ export class PineconeClient {
       await this.initialize();
     }
 
-    app.logger.info(`Upserting ${chunks.length} document chunks to Pinecone`);
+    console.info(`Upserting ${chunks.length} document chunks to Pinecone`);
 
     try {
       // Process chunks in batches to avoid API limits
@@ -152,12 +151,12 @@ export class PineconeClient {
         // Upsert batch to Pinecone
         await this.index.upsert(vectors);
         
-        app.logger.debug(`Upserted batch ${Math.floor(i / batchSize) + 1} of ${Math.ceil(chunks.length / batchSize)}`);
+        console.debug(`Upserted batch ${Math.floor(i / batchSize) + 1} of ${Math.ceil(chunks.length / batchSize)}`);
       }
 
-      app.logger.info(`Successfully upserted ${chunks.length} chunks to Pinecone`);
+      console.info(`Successfully upserted ${chunks.length} chunks to Pinecone`);
     } catch (error) {
-      app.logger.error('Failed to upsert chunks to Pinecone:', error);
+      console.error('Failed to upsert chunks to Pinecone:', error);
       throw error;
     }
   }
@@ -168,15 +167,15 @@ export class PineconeClient {
     }
 
     try {
-      app.logger.info(`Deleting chunks for file ${fileId} from Pinecone`);
+      console.info(`Deleting chunks for file ${fileId} from Pinecone`);
       
       await this.index.deleteMany({
         filter: { fileId: { $eq: fileId } },
       });
       
-      app.logger.info(`Successfully deleted chunks for file ${fileId}`);
+      console.info(`Successfully deleted chunks for file ${fileId}`);
     } catch (error) {
-      app.logger.error(`Failed to delete chunks for file ${fileId}:`, error);
+      console.error(`Failed to delete chunks for file ${fileId}:`, error);
       throw error;
     }
   }
@@ -191,7 +190,7 @@ export class PineconeClient {
     }
 
     try {
-      app.logger.debug(`Searching for similar chunks: "${query}"`);
+      console.debug(`Searching for similar chunks: "${query}"`);
       
       // Generate embedding for query
       const queryEmbedding = await this.generateEmbedding(query);
@@ -212,11 +211,11 @@ export class PineconeClient {
           content: match.metadata.content,
         })) || [];
 
-      app.logger.debug(`Found ${results.length} relevant chunks (score >= ${minScore})`);
+      console.debug(`Found ${results.length} relevant chunks (score >= ${minScore})`);
       
       return results;
     } catch (error) {
-      app.logger.error('Failed to search Pinecone:', error);
+      console.error('Failed to search Pinecone:', error);
       throw error;
     }
   }
@@ -229,7 +228,7 @@ export class PineconeClient {
     try {
       return await this.index.describeIndexStats();
     } catch (error) {
-      app.logger.error('Failed to get index stats:', error);
+      console.error('Failed to get index stats:', error);
       throw error;
     }
   }
@@ -240,13 +239,13 @@ export class PineconeClient {
     }
 
     try {
-      app.logger.warn(`Clearing all vectors from index: ${this.indexName}`);
+      console.warn(`Clearing all vectors from index: ${this.indexName}`);
       
       await this.index.deleteMany({});
       
-      app.logger.info('Successfully cleared index');
+      console.info('Successfully cleared index');
     } catch (error) {
-      app.logger.error('Failed to clear index:', error);
+      console.error('Failed to clear index:', error);
       throw error;
     }
   }

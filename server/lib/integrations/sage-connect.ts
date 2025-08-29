@@ -1,4 +1,3 @@
-import { app } from '~/app';
 
 export interface SageConnectConfig {
   apiUrl: string;
@@ -126,8 +125,8 @@ export class SageConnectClient {
       ...payload,
     };
 
-    app.logger.debug(`Sage Connect API request - Service ${serviceId}`);
-    app.logger.info(`Sage Connect request body:`, JSON.stringify(requestBody, null, 2));
+    console.debug(`Sage Connect API request - Service ${serviceId}`);
+    console.info(`Sage Connect request body:`, JSON.stringify(requestBody, null, 2));
 
     try {
       const response = await fetch(this.apiUrl, {
@@ -152,7 +151,7 @@ export class SageConnectClient {
 
       return result as T;
     } catch (error) {
-      app.logger.error(`Sage Connect API request failed (Service ${serviceId}):`, error);
+      console.error(`Sage Connect API request failed (Service ${serviceId}):`, error);
       throw error;
     }
   }
@@ -194,7 +193,7 @@ export class SageConnectClient {
       const response = await this.request<any>(103, payload); // Service ID 103: Product Search
       
       // Debug log the actual response structure
-      app.logger.info('Sage Connect raw response:', JSON.stringify(response, null, 2));
+      console.info('Sage Connect raw response:', JSON.stringify(response, null, 2));
       
       // Transform the API response to match our interface
       const transformedProducts = (response.products || []).map((product: any) => ({
@@ -220,7 +219,7 @@ export class SageConnectClient {
         limit: response.limit || transformedProducts.length || 25,
       };
     } catch (error) {
-      app.logger.error('Product search failed:', error);
+      console.error('Product search failed:', error);
       throw error;
     }
   }
@@ -238,7 +237,7 @@ export class SageConnectClient {
       const response = await this.request<any>(105, payload); // Service ID 105: Full Product Detail
       
       // Debug log the response
-      app.logger.info('Service 105 response:', JSON.stringify(response, null, 2));
+      console.info('Service 105 response:', JSON.stringify(response, null, 2));
       
       // The response might have the product data at different levels
       // Try response.product first, then response itself
@@ -251,7 +250,7 @@ export class SageConnectClient {
         prodEId: productData.prodEId || parseInt(productId, 10),
       };
     } catch (error) {
-      app.logger.error(`Product detail lookup failed for ${productId}:`, error);
+      console.error(`Product detail lookup failed for ${productId}:`, error);
       throw error;
     }
   }
@@ -270,7 +269,7 @@ export class SageConnectClient {
         lastUpdated: response.lastUpdated || new Date().toISOString(),
       };
     } catch (error) {
-      app.logger.error(`Inventory check failed for ${productId}:`, error);
+      console.error(`Inventory check failed for ${productId}:`, error);
       throw error;
     }
   }
@@ -288,7 +287,7 @@ export class SageConnectClient {
         themes: response.themes || [],
       };
     } catch (error) {
-      app.logger.error('Categories lookup failed:', error);
+      console.error('Categories lookup failed:', error);
       throw error;
     }
   }

@@ -5,3 +5,4 @@ export * from "./update-chat-title";
 export * from "./web-search";
 export * from "./knowledge-search";
 export * from "./sage-connect";
+export * from "./vectorize-image";

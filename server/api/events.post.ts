@@ -1,6 +1,3 @@
-import { createHandler } from "@vercel/slack-bolt";
-import { app, receiver } from "../app";
-
 export default defineEventHandler(async (event) => {
   try {
     // Handle Slack URL verification challenge BEFORE any authentication
@@ -9,19 +6,25 @@ export default defineEventHandler(async (event) => {
     
     if (body && body.type === 'url_verification' && body.challenge) {
       console.log('Handling URL verification challenge:', body.challenge);
-      // Return the challenge directly without going through Slack Bolt
-      return new Response(JSON.stringify({ challenge: body.challenge }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      // Set proper headers and return plain text challenge
+      setResponseHeader(event, 'Content-Type', 'text/plain');
+      setResponseStatus(event, 200);
+      return body.challenge;
     }
+    
+    // Lazy load dependencies to avoid circular dependencies
+    const { createHandler } = await import('@vercel/slack-bolt');
+    const { app, receiver } = await import('../app');
     
     // Only create handler after challenge check
     const handler = createHandler(app, receiver);
     
-    // Ensure the app is initialized before handling requests
-    if (!app.initialized) {
+    // Initialize app if needed
+    try {
       await app.init();
+    } catch (error) {
+      // App might already be initialized
+      console.debug('App init called (may already be initialized):', error.message);
     }
     
     // In v3 of Nitro, we will be able to use the request object directly

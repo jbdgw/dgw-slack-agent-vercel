@@ -1,5 +1,4 @@
 import { generateText, type ModelMessage, stepCountIs } from "ai";
-import { app } from "~/app";
 import {
   getChannelMessagesTool,
   getThreadMessagesTool,
@@ -13,6 +12,8 @@ import {
   getProductDetailTool,
   checkInventoryTool,
   getCategoriesAndThemesTool,
+  vectorizeImageTool,
+  vectorizerAccountTool,
 } from "./tools";
 
 interface RespondToMessageOptions {
@@ -42,6 +43,8 @@ export const respondToMessage = async ({
       system: `
 			You are Slack Agent, a friendly and professional agent for Slack.
       Always gather context from Slack before asking the user for clarification.
+
+      Current date and time: ${new Date().toISOString().split('T')[0]} (${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })})
 
       ${isDirectMessage ? "You are in a direct message with the user." : "You are not in a direct message with the user."}
 
@@ -89,7 +92,15 @@ export const respondToMessage = async ({
       - Use getCategoriesAndThemesTool to explore available product categories and themes.
       - Always provide product IDs so users can reference them for detailed information.
 
-      8. Responding
+      8. Image Vectorization (Vectorizer.AI)
+      - Use vectorizeImageTool to convert bitmap images (JPG, PNG, GIF, BMP, TIFF) to vector graphics (SVG, PDF, PNG).
+      - Good examples: "Vectorize this logo", "Convert this image to SVG", "Make this picture scalable"
+      - Supports images from URLs, Slack file uploads, or base64 data.
+      - Use preview mode by default for testing, production mode for final results.
+      - Use vectorizerAccountTool to check account status and remaining credits.
+      - Always inform users about costs: preview mode (0.2 credits), production mode (1.0 credit), test mode (free).
+
+      9. Responding
       - After fetching context, answer clearly and helpfully.
       - Suggest next steps if needed; avoid unnecessary clarifying questions if tools can answer.
       - Slack markdown does not support language tags in code blocks.
@@ -137,6 +148,8 @@ export const respondToMessage = async ({
         getProductDetailTool,
         checkInventoryTool,
         getCategoriesAndThemesTool,
+        vectorizeImageTool,
+        vectorizerAccountTool,
       },
       prepareStep: () => {
         return {
@@ -153,6 +166,8 @@ export const respondToMessage = async ({
                 "getProductDetailTool",
                 "checkInventoryTool",
                 "getCategoriesAndThemesTool",
+                "vectorizeImageTool",
+                "vectorizerAccountTool",
               ]
             : [
                 "getThreadMessagesTool",
@@ -166,12 +181,14 @@ export const respondToMessage = async ({
                 "getProductDetailTool",
                 "checkInventoryTool",
                 "getCategoriesAndThemesTool",
+                "vectorizeImageTool",
+                "vectorizerAccountTool",
               ],
         };
       },
       onStepFinish: ({ toolCalls }) => {
         if (toolCalls.length > 0) {
-          app.logger.debug(
+          console.debug(
             "tool call args:",
             toolCalls.map((call) => call.input),
           );
@@ -185,7 +202,7 @@ export const respondToMessage = async ({
     });
     return text;
   } catch (error) {
-    app.logger.error(error);
+    console.error(error);
     throw error;
   }
 };

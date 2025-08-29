@@ -16,6 +16,7 @@ This is a Slack bot application built with Nitro framework and integrated with m
 - **Document Storage**: Google Drive
 - **Product Catalog**: Sage Connect API
 - **Web Search**: Exa API
+- **Image Vectorization**: Vectorizer.ai API
 
 ## Project Structure
 
@@ -116,7 +117,7 @@ npm run configure
 
 1. Create a new Slack app at https://api.slack.com/apps
 2. Configure OAuth & Permissions:
-   - Add bot token scopes: `app_mentions:read`, `chat:write`, `channels:history`, `groups:history`, `im:history`, `mpim:history`
+   - Add bot token scopes: `app_mentions:read`, `chat:write`, `channels:history`, `groups:history`, `im:history`, `mpim:history`, `files:read`
 3. Enable Event Subscriptions:
    - Request URL: `https://your-deployment-url.vercel.app/api/slack-verify`
    - Subscribe to: `app_mention`, `message.channels`, `message.groups`, `message.im`, `message.mpim`
@@ -164,11 +165,21 @@ vercel --prod
 - Current events and news lookup
 - Domain-specific search capabilities
 
-### 5. Slack Integration
+### 5. Image Vectorization
+- Convert bitmap images (JPG, PNG, GIF, BMP, TIFF) to vector graphics (SVG, PDF, PNG)
+- Automatic detection of uploaded files in conversations
+- Support for preview mode (watermarked, 0.2 credits) and production mode (clean, 1.0 credit)
+- Test mode available for free development and debugging
+- Multiple output formats: SVG, PNG, PDF, EPS, DXF
+- Account status monitoring and credit tracking
+- Image token system for multi-format downloads at reduced cost
+
+### 6. Slack Integration
 - App mentions and direct messages
 - Thread and channel message context
 - Chat title updates
 - Status indicators
+- File upload processing with proper authentication
 
 ## API Endpoints
 
@@ -188,8 +199,9 @@ vercel --prod
 1. **Web Search Tool** - Search current web information
 2. **Knowledge Search Tool** - Query internal knowledge base
 3. **Sage Connect Tools** - Product catalog operations
-4. **Slack Context Tools** - Retrieve message history
-5. **Status Tools** - Update agent status and chat titles
+4. **Image Vectorization Tools** - Convert images to vector graphics
+5. **Slack Context Tools** - Retrieve message history
+6. **Status Tools** - Update agent status and chat titles
 
 ## Development Commands
 
@@ -221,6 +233,8 @@ vercel logs               # View deployment logs
 - [ ] Exa API key configured
 - [ ] OpenAI API key with sufficient credits
 - [ ] Knowledge base documents processed
+- [ ] **Vectorizer.ai API credentials configured**
+- [ ] **Slack bot permissions include `files:read` scope**
 - [ ] Bot permissions configured in Slack workspace
 
 ## Troubleshooting
@@ -246,6 +260,14 @@ vercel logs               # View deployment logs
    - Verify Sage Connect API credentials
    - Check API endpoint URL and version
    - Review API rate limits
+
+5. **Image Vectorization Issues**
+   - Check vectorizer.ai API credentials in Vercel environment variables
+   - Ensure Slack app has `files:read` permission (reinstall app after adding scope)
+   - Verify account status: "What's my vectorizer.ai account status?"
+   - Test with test mode: "vectorize in test mode" (free, watermarked)
+   - Check supported formats: JPG, PNG, GIF, BMP, TIFF
+   - Ensure images are uploaded as file attachments, not pasted inline
 
 ### Development Tips
 
@@ -283,8 +305,55 @@ vercel logs               # View deployment logs
 
 ---
 
-**Current Deployment URL**: `https://dgw-slack-vercel-agent-eferza6cj-jordans-projects-608b7fba.vercel.app`
-**Slack Webhook**: `https://dgw-slack-vercel-agent-eferza6cj-jordans-projects-608b7fba.vercel.app/api/slack-verify`
+## Future Enhancement Plan: Image Display in Slack
+
+### Current Status
+✅ **Core vectorization functionality working:**
+- Image upload detection and processing
+- Vectorizer.ai API integration with proper authentication
+- Support for preview/production/test modes
+- Account status monitoring and credit tracking
+- Image token system for multi-format downloads
+
+❌ **Missing: Display results in Slack**
+Currently, vectorized images are processed and stored on vectorizer.ai servers but not displayed in Slack. Users receive confirmation and metadata but must access results externally.
+
+### Enhancement Plan
+
+#### Phase 1: Basic Image Display
+1. **Download vectorized results** from vectorizer.ai after processing
+2. **Upload to Slack** using `files.upload` API
+3. **Display inline** in the conversation thread
+4. **Add file metadata** (format, size, credits used)
+
+#### Phase 2: Multi-Format Support  
+1. **Offer format selection** via Slack interactive components
+2. **Generate multiple formats** using image tokens
+3. **Create format comparison** views (preview vs. production)
+4. **Batch download options** for different formats
+
+#### Phase 3: Advanced Features
+1. **Interactive preview/production toggle** with credit confirmation
+2. **Image editing suggestions** based on vectorization quality
+3. **Batch processing** for multiple images
+4. **Integration with Slack Canvas** for persistent image galleries
+
+#### Technical Requirements
+- **Additional Slack permissions:** `files:write:user`
+- **File storage strategy:** Temporary local storage or direct stream processing
+- **Error handling:** Fallback for large files or network issues
+- **Performance optimization:** Async processing with status updates
+
+#### Implementation Priority
+- **Priority 1:** Basic SVG result display in Slack (most common use case)
+- **Priority 2:** PNG result display for broader compatibility
+- **Priority 3:** Multi-format selection and comparison
+- **Priority 4:** Advanced interactive features
+
+---
+
+**Current Deployment URL**: `https://dgw-slack-vercel-agent-b0lcobqn4-jordans-projects-608b7fba.vercel.app`
+**Slack Webhook**: `https://dgw-slack-vercel-agent-b0lcobqn4-jordans-projects-608b7fba.vercel.app/api/slack-verify`
 
 Last Updated: August 29, 2025
-Version: 1.0.0
+Version: 1.1.0 - Image Vectorization Feature Complete

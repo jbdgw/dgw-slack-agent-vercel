@@ -1,6 +1,6 @@
 # Slack Agent - AI-Powered Bot
 
-A comprehensive Slack bot built with Nitro, featuring AI-powered responses, knowledge base search, promotional product lookup, and real-time web search capabilities.
+A comprehensive Slack bot built with Nitro, featuring AI-powered responses, knowledge base search, promotional product lookup, image vectorization, and real-time web search capabilities.
 
 ## 🚀 Features
 
@@ -8,6 +8,7 @@ A comprehensive Slack bot built with Nitro, featuring AI-powered responses, know
 - **🔍 Web Search** - Real-time information retrieval via Exa API
 - **📚 Knowledge Base** - Document search from Google Drive using vector similarity (Pinecone)
 - **🛍️ Product Search** - Promotional product lookup via Sage Connect API
+- **🎨 Image Vectorization** - Convert bitmap images to vector graphics (SVG, PDF, PNG) using Vectorizer.ai
 - **💬 Slack Integration** - Full context awareness with thread/channel message history
 - **🔧 Tool Orchestration** - Intelligent tool selection based on user queries
 
@@ -21,6 +22,7 @@ A comprehensive Slack bot built with Nitro, featuring AI-powered responses, know
 - **Storage**: Google Drive
 - **Search**: Exa API
 - **Product API**: Sage Connect
+- **Image Processing**: Vectorizer.ai API
 - **Deployment**: Vercel
 
 ## 📋 Prerequisites
@@ -32,6 +34,7 @@ A comprehensive Slack bot built with Nitro, featuring AI-powered responses, know
 - (Optional) Pinecone account for vector search
 - (Optional) Exa API key for web search
 - (Optional) Sage Connect API credentials for product search
+- (Optional) Vectorizer.ai API credentials for image vectorization
 
 ## ⚡ Quick Start
 

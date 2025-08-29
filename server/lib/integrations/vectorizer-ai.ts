@@ -246,8 +246,23 @@ export class VectorizerAI {
   }
 }
 
-// Create a singleton instance
-export const vectorizerAI = new VectorizerAI({
-  apiId: process.env.VECTORIZER_AI_API_ID!,
-  apiSecret: process.env.VECTORIZER_AI_API_SECRET!,
-});
+// Create a singleton instance with better error handling
+const createVectorizerAI = () => {
+  const apiId = process.env.VECTORIZER_AI_API_ID;
+  const apiSecret = process.env.VECTORIZER_AI_API_SECRET;
+
+  if (!apiId || !apiSecret) {
+    console.error('Vectorizer.AI credentials not configured:', {
+      hasApiId: !!apiId,
+      hasApiSecret: !!apiSecret,
+    });
+    throw new Error('Vectorizer.AI API credentials not configured in environment variables');
+  }
+
+  return new VectorizerAI({
+    apiId,
+    apiSecret,
+  });
+};
+
+export const vectorizerAI = createVectorizerAI();

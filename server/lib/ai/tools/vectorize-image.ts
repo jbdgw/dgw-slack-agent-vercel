@@ -187,18 +187,52 @@ ${result.imageToken ? '\n🔄 *Use the image token to download additional format
       
       // Provide helpful error guidance
       let helpText = "";
-      if (errorMessage.includes("Failed to fetch Slack file")) {
-        helpText = "\n\n💡 *Make sure I have permission to access the file and that it's a valid image format (JPG, PNG, GIF, BMP, TIFF)*";
-      } else if (errorMessage.includes("API error")) {
-        helpText = "\n\n💡 *This might be an issue with the vectorizer.ai service. Try again in a moment or check if your API credentials are configured correctly.*";
-      } else if (errorMessage.includes("not configured")) {
-        helpText = "\n\n💡 *The vectorizer.ai API credentials need to be configured by an administrator.*";
+      let troubleshootingSteps = "";
+      
+      if (errorMessage.includes("credentials not configured") || errorMessage.includes("not configured")) {
+        helpText = "\n\n🔧 **Configuration Issue**: The vectorizer.ai API credentials are not set up properly.";
+        troubleshootingSteps = `
+**Admin Action Required:**
+1. Go to Vercel dashboard → Environment Variables
+2. Add: \`VECTORIZER_AI_API_ID\` with your API ID
+3. Add: \`VECTORIZER_AI_API_SECRET\` with your API Secret
+4. Redeploy the application
+
+💡 *Get your API credentials from: https://vectorizer.ai/account*`;
+      } else if (errorMessage.includes("Failed to fetch Slack file")) {
+        helpText = "\n\n📁 **File Access Issue**: Could not download the uploaded file.";
+        troubleshootingSteps = `
+**Please try:**
+1. Make sure the file is a valid image (JPG, PNG, GIF, BMP, TIFF)
+2. Re-upload the image as a file attachment
+3. Check that I have permission to access files in this channel`;
+      } else if (errorMessage.includes("API error") || errorMessage.includes("401") || errorMessage.includes("403")) {
+        helpText = "\n\n🔐 **Authentication Issue**: Invalid or expired API credentials.";
+        troubleshootingSteps = `
+**Please check:**
+1. API credentials are correct in Vercel environment
+2. Vectorizer.ai account is active
+3. Sufficient credits available
+
+Try: "What's my vectorizer.ai account status?" to verify account health.`;
+      } else if (errorMessage.includes("429")) {
+        helpText = "\n\n⏱️ **Rate Limit**: Too many requests to vectorizer.ai API.";
+        troubleshootingSteps = "\n**Please wait a moment and try again.**";
+      } else {
+        helpText = "\n\n❓ **Unexpected Error**: Something went wrong with the vectorization service.";
+        troubleshootingSteps = `
+**Troubleshooting:**
+1. Try again in a moment (temporary service issue)
+2. Check account status: "What's my vectorizer.ai account status?"
+3. Try test mode: Use options with mode set to "test"`;
       }
       
       return [
         {
           role: "user" as const,
-          content: `❌ **Image vectorization failed:** ${errorMessage}${helpText}`,
+          content: `❌ **Image Vectorization Failed**${helpText}
+
+**Error:** ${errorMessage}${troubleshootingSteps}`,
         },
       ];
     }

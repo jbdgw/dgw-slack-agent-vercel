@@ -283,8 +283,8 @@ vercel logs               # View deployment logs
 
 ---
 
-**Current Deployment URL**: `https://dgw-slack-vercel-agent-ihar655io-jordans-projects-608b7fba.vercel.app`
-**Slack Webhook**: `https://dgw-slack-vercel-agent-ihar655io-jordans-projects-608b7fba.vercel.app/api/slack-verify`
+**Current Deployment URL**: `https://dgw-slack-vercel-agent-j44txqing-jordans-projects-608b7fba.vercel.app`
+**Slack Webhook**: `https://dgw-slack-vercel-agent-j44txqing-jordans-projects-608b7fba.vercel.app/api/slack-verify`
 
 Last Updated: August 29, 2025
 Version: 1.0.0

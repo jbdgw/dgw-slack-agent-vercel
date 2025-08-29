@@ -233,10 +233,11 @@ export class VectorizerAI {
         hasToken: !!slackBotToken,
       });
 
-      // Fetch the file from Slack
+      // Fetch the file from Slack with proper headers
       const response = await fetch(slackFileUrl, {
         headers: {
           'Authorization': `Bearer ${slackBotToken}`,
+          'User-Agent': 'Slack-Agent-Vectorizer/1.0',
         },
       });
 

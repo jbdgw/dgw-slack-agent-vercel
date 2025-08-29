@@ -81,6 +81,14 @@ export const vectorizeImageTool = tool({
             );
             
             if (imageFile && imageFile.url_private) {
+              console.log('📁 Found image file:', {
+                name: imageFile.name,
+                mimetype: imageFile.mimetype,
+                size: imageFile.size,
+                url_private: imageFile.url_private?.substring(0, 50) + '...',
+                url_private_download: imageFile.url_private_download?.substring(0, 50) + '...',
+              });
+              
               targetImageUrl = imageFile.url_private;
               sourceDescription = `uploaded image (${imageFile.name})`;
               break;
@@ -98,7 +106,9 @@ I couldn't find any uploaded images in the recent conversation. Please either:
 1. Upload an image file (JPG, PNG, GIF, BMP, TIFF) and ask me to vectorize it
 2. Provide a direct image URL by saying something like: "Vectorize this image: https://example.com/image.jpg"
 
-💡 *Make sure the image is uploaded as a file attachment, not just pasted inline.*`,
+💡 *Make sure the image is uploaded as a file attachment, not just pasted inline.*
+
+🧪 **For testing:** You can also try "vectorize in test mode" for free debugging.`,
             },
           ];
         }
@@ -112,13 +122,35 @@ I couldn't find any uploaded images in the recent conversation. Please either:
         status: "is vectorizing your image...",
       });
 
-      // Vectorize the image using the Slack file method (which handles authentication)
+      // Get the file content using Slack Web API instead of direct URL
       if (!process.env.SLACK_BOT_TOKEN) {
         throw new Error("Slack bot token not configured");
       }
 
+      // Extract file ID from the URL to use Slack Web API
+      const fileIdMatch = targetImageUrl.match(/files-pri\/[^\/]+\/([^\/]+)\//);
+      if (!fileIdMatch) {
+        throw new Error("Could not extract file ID from Slack URL");
+      }
+      
+      const fileId = fileIdMatch[1];
+      console.log('📄 Extracted file ID:', fileId);
+      
+      // Use Slack Web API to get file info
+      const fileInfo = await app.client.files.info({
+        file: fileId,
+      });
+      
+      if (!fileInfo.file?.url_private_download) {
+        throw new Error("Could not get file download URL from Slack API");
+      }
+      
+      console.log('🔗 Using Slack API download URL:', {
+        url: fileInfo.file.url_private_download.substring(0, 50) + '...',
+      });
+
       result = await vectorizerAI.vectorizeFromSlackFile(
-        targetImageUrl, 
+        fileInfo.file.url_private_download, 
         process.env.SLACK_BOT_TOKEN, 
         vectorizeOptions
       );

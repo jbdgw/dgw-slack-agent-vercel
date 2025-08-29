@@ -66,6 +66,14 @@ export class VectorizerAI {
     options?: VectorizeOptions
   ): Promise<VectorizeResult> {
     try {
+      console.log('🚀 Making vectorizer.ai API request:', {
+        endpoint,
+        url: `${this.config.apiUrl}/${endpoint}`,
+        hasAuth: !!this.getAuthHeader(),
+        mode: options?.mode,
+        outputFormat: options?.outputFormat,
+      });
+
       const response = await fetch(`${this.config.apiUrl}/${endpoint}`, {
         method: 'POST',
         headers: {
@@ -74,10 +82,20 @@ export class VectorizerAI {
         body: formData,
       });
 
+      console.log('📡 Vectorizer.ai API response:', {
+        status: response.status,
+        statusText: response.statusText,
+        contentType: response.headers.get('content-type'),
+        imageToken: response.headers.get('X-Image-Token'),
+        creditsCharged: response.headers.get('X-Credits-Charged'),
+      });
+
       if (!response.ok) {
         let errorData: VectorizerAIError;
+        let errorResponseText = '';
         try {
-          const errorJson = await response.json();
+          errorResponseText = await response.text();
+          const errorJson = JSON.parse(errorResponseText);
           errorData = errorJson.error || {
             status: response.status,
             code: 0,
@@ -90,6 +108,13 @@ export class VectorizerAI {
             message: `HTTP ${response.status}: ${response.statusText}`,
           };
         }
+        
+        console.error('❌ Vectorizer.ai API error:', {
+          status: response.status,
+          errorData,
+          responseText: errorResponseText.substring(0, 500),
+        });
+        
         throw new Error(`Vectorizer.AI API error: ${errorData.message} (Code: ${errorData.code})`);
       }
 
@@ -203,11 +228,23 @@ export class VectorizerAI {
     options: VectorizeOptions = {}
   ): Promise<VectorizeResult> {
     try {
+      console.log('🔍 Attempting to fetch Slack file:', {
+        url: slackFileUrl.substring(0, 50) + '...',
+        hasToken: !!slackBotToken,
+      });
+
       // Fetch the file from Slack
       const response = await fetch(slackFileUrl, {
         headers: {
           'Authorization': `Bearer ${slackBotToken}`,
         },
+      });
+
+      console.log('📥 Slack file fetch response:', {
+        status: response.status,
+        statusText: response.statusText,
+        contentType: response.headers.get('content-type'),
+        contentLength: response.headers.get('content-length'),
       });
 
       if (!response.ok) {
@@ -217,8 +254,14 @@ export class VectorizerAI {
       const imageBuffer = Buffer.from(await response.arrayBuffer());
       const filename = slackFileUrl.split('/').pop() || 'image.jpg';
       
+      console.log('🖼️ Image buffer created:', {
+        filename,
+        bufferSize: imageBuffer.length,
+      });
+      
       return this.vectorizeFromBuffer(imageBuffer, filename, options);
     } catch (error) {
+      console.error('❌ Slack file vectorization failed:', error);
       throw new Error(`Failed to vectorize Slack file: ${error instanceof Error ? error.message : String(error)}`);
     }
   }

@@ -6,23 +6,10 @@ import { vectorizerAI } from "~/lib/integrations/vectorizer-ai";
 import type { ExperimentalContext } from "../respond-to-message";
 
 export const vectorizeImageTool = tool({
-  name: "vectorize_image",
-  description: "Convert bitmap images (JPG, PNG, GIF, BMP, TIFF) to vector graphics (SVG, PDF, PNG). Supports images from URLs, Slack file uploads, or base64 data. Use this when users want to convert raster images to scalable vector format.",
+  name: "vectorize_image", 
+  description: "Convert bitmap images (JPG, PNG, GIF, BMP, TIFF) to vector graphics (SVG, PDF, PNG). Use this when users ask to vectorize images. The tool will automatically detect uploaded files in the conversation or accept image URLs. Always try this tool first when users mention vectorizing, converting to SVG, or making images scalable.",
   inputSchema: z.object({
-    imageSource: z.discriminatedUnion("type", [
-      z.object({
-        type: z.literal("url"),
-        url: z.string().url().describe("URL of the image to vectorize"),
-      }),
-      z.object({
-        type: z.literal("slack_file"),
-        fileUrl: z.string().describe("Slack file URL from file upload"),
-      }),
-      z.object({
-        type: z.literal("base64"),
-        data: z.string().describe("Base64 encoded image data"),
-      }),
-    ]).describe("Source of the image to vectorize"),
+    imageUrl: z.string().optional().describe("Optional: Specific image URL to vectorize. If not provided, tool will look for recently uploaded files in the conversation."),
     options: z.object({
       mode: z.enum(["production", "preview", "test", "test_preview"]).optional().default("preview").describe("Processing mode - use 'preview' for testing, 'production' for final results"),
       outputFormat: z.enum(["svg", "png", "pdf", "eps", "dxf"]).optional().default("svg").describe("Output format for the vectorized image"),
@@ -30,7 +17,7 @@ export const vectorizeImageTool = tool({
       retentionDays: z.number().int().min(0).max(30).optional().default(1).describe("Days to retain the result for downloading other formats"),
     }).optional().default({}),
   }),
-  execute: async ({ imageSource, options = {} }, { experimental_context }) => {
+  execute: async ({ imageUrl, options = {} }, { experimental_context }) => {
     try {
       const { channel, thread_ts } = experimental_context as ExperimentalContext;
       
@@ -38,10 +25,10 @@ export const vectorizeImageTool = tool({
       await updateAgentStatus({
         channel,
         thread_ts,
-        status: "is vectorizing your image...",
+        status: "is looking for images to vectorize...",
       });
 
-      app.logger.debug("Image vectorization request:", { imageSource: imageSource.type, options });
+      app.logger.debug("Image vectorization request:", { imageUrl, options });
 
       // Prepare vectorization options
       const vectorizeOptions = {
@@ -55,34 +42,86 @@ export const vectorizeImageTool = tool({
 
       let result;
       let sourceDescription;
+      let targetImageUrl = imageUrl;
 
-      // Handle different image source types
-      switch (imageSource.type) {
-        case "url":
-          result = await vectorizerAI.vectorizeFromUrl(imageSource.url, vectorizeOptions);
-          sourceDescription = `image from ${imageSource.url}`;
-          break;
-          
-        case "slack_file":
-          if (!process.env.SLACK_BOT_TOKEN) {
-            throw new Error("Slack bot token not configured");
+      // If no specific URL provided, try to find uploaded files in the conversation
+      if (!targetImageUrl) {
+        await updateAgentStatus({
+          channel,
+          thread_ts,
+          status: "is searching for uploaded images in the conversation...",
+        });
+
+        // Get recent messages to look for file uploads
+        let messagesToCheck;
+        if (thread_ts) {
+          // If we're in a thread, check thread messages
+          const threadMessages = await app.client.conversations.replies({
+            channel,
+            ts: thread_ts,
+            limit: 10,
+          });
+          messagesToCheck = threadMessages.messages || [];
+        } else {
+          // If not in thread, check recent channel messages  
+          const channelMessages = await app.client.conversations.history({
+            channel,
+            limit: 10,
+          });
+          messagesToCheck = channelMessages.messages || [];
+        }
+
+        // Look for files in recent messages (starting with most recent)
+        for (const message of messagesToCheck) {
+          if (message.files && message.files.length > 0) {
+            // Find the first image file
+            const imageFile = message.files.find(file => 
+              file.mimetype?.startsWith('image/') || 
+              /\.(jpg|jpeg|png|gif|bmp|tiff)$/i.test(file.name || '')
+            );
+            
+            if (imageFile && imageFile.url_private) {
+              targetImageUrl = imageFile.url_private;
+              sourceDescription = `uploaded image (${imageFile.name})`;
+              break;
+            }
           }
-          result = await vectorizerAI.vectorizeFromSlackFile(
-            imageSource.fileUrl, 
-            process.env.SLACK_BOT_TOKEN, 
-            vectorizeOptions
-          );
-          sourceDescription = "uploaded image";
-          break;
-          
-        case "base64":
-          result = await vectorizerAI.vectorizeFromBase64(imageSource.data, vectorizeOptions);
-          sourceDescription = "base64 image data";
-          break;
-          
-        default:
-          throw new Error("Invalid image source type");
+        }
+
+        if (!targetImageUrl) {
+          return [
+            {
+              role: "user" as const,
+              content: `❌ **No image found!** 
+
+I couldn't find any uploaded images in the recent conversation. Please either:
+1. Upload an image file (JPG, PNG, GIF, BMP, TIFF) and ask me to vectorize it
+2. Provide a direct image URL by saying something like: "Vectorize this image: https://example.com/image.jpg"
+
+💡 *Make sure the image is uploaded as a file attachment, not just pasted inline.*`,
+            },
+          ];
+        }
+      } else {
+        sourceDescription = `image from ${targetImageUrl}`;
       }
+
+      await updateAgentStatus({
+        channel,
+        thread_ts,
+        status: "is vectorizing your image...",
+      });
+
+      // Vectorize the image using the Slack file method (which handles authentication)
+      if (!process.env.SLACK_BOT_TOKEN) {
+        throw new Error("Slack bot token not configured");
+      }
+
+      result = await vectorizerAI.vectorizeFromSlackFile(
+        targetImageUrl, 
+        process.env.SLACK_BOT_TOKEN, 
+        vectorizeOptions
+      );
 
       // Determine content type description
       const formatDescription = {

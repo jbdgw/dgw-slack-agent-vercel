@@ -128,8 +128,10 @@ I couldn't find any uploaded images in the recent conversation. Please either:
       }
 
       // Extract file ID from the URL to use Slack Web API
-      const fileIdMatch = targetImageUrl.match(/files-pri\/[^\/]+\/([^\/]+)\//);
+      // URL format: https://files.slack.com/files-pri/T0E5Y74JD-F09CQ6XXX/filename.jpg
+      const fileIdMatch = targetImageUrl.match(/files-pri\/[^\/]+-([^\/]+)/);
       if (!fileIdMatch) {
+        console.error('Could not extract file ID from URL:', targetImageUrl.substring(0, 100));
         throw new Error("Could not extract file ID from Slack URL");
       }
       

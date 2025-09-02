@@ -400,8 +400,8 @@ Currently, vectorized images are processed and stored on vectorizer.ai servers b
 
 ---
 
-**Current Deployment URL**: `https://dgw-slack-vercel-agent-2x2c2ydb8-jordans-projects-608b7fba.vercel.app`
-**Slack Webhook**: `https://dgw-slack-vercel-agent-2x2c2ydb8-jordans-projects-608b7fba.vercel.app/api/slack-verify`
+**Current Deployment URL**: `https://dgw-slack-vercel-agent-buku3kokp-jordans-projects-608b7fba.vercel.app`
+**Slack Webhook**: `https://dgw-slack-vercel-agent-buku3kokp-jordans-projects-608b7fba.vercel.app/api/slack-verify`
 
 Last Updated: September 2, 2025
 Version: 1.3.0 - Enhanced Exa API Integration with Company Research Tool

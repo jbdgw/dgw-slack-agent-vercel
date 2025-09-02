@@ -1,10 +1,11 @@
 # Slack Agent - AI-Powered Bot
 
-A comprehensive Slack bot built with Nitro, featuring AI-powered responses, knowledge base search, promotional product lookup, image vectorization, and real-time web search capabilities.
+A comprehensive Slack bot built with Nitro, featuring AI-powered responses with persistent memory, knowledge base search, promotional product lookup, image vectorization, and real-time web search capabilities.
 
 ## 🚀 Features
 
-- **🤖 AI-Powered Responses** - Intelligent conversation using OpenAI GPT-4o-mini
+- **🤖 AI-Powered Responses** - Intelligent conversation using OpenAI GPT-4o with persistent memory
+- **🧠 Persistent Memory** - Remembers user preferences, conversations, and context across sessions using Mem0 AI
 - **🔍 Web Search** - Real-time information retrieval via Exa API
 - **📚 Knowledge Base** - Document search from Google Drive using vector similarity (Pinecone)
 - **🛍️ Product Search** - Promotional product lookup via Sage Connect API
@@ -16,7 +17,8 @@ A comprehensive Slack bot built with Nitro, featuring AI-powered responses, know
 
 - **Framework**: Nitro (Universal JavaScript Server)
 - **Language**: TypeScript 5+
-- **AI**: Vercel AI SDK + OpenAI GPT-4o-mini
+- **AI**: Vercel AI SDK + OpenAI GPT-4o
+- **Memory**: Mem0 AI for persistent conversation memory
 - **Slack**: @slack/bolt + @vercel/slack-bolt
 - **Vector DB**: Pinecone
 - **Storage**: Google Drive
@@ -35,6 +37,7 @@ A comprehensive Slack bot built with Nitro, featuring AI-powered responses, know
 - (Optional) Exa API key for web search
 - (Optional) Sage Connect API credentials for product search
 - (Optional) Vectorizer.ai API credentials for image vectorization
+- (Optional) Mem0 API key for persistent memory features
 
 ## ⚡ Quick Start
 
@@ -79,6 +82,9 @@ SAGE_LOGIN_ID=your_login_id
 SAGE_API_KEY=your_sage_api_key
 SAGE_API_URL=https://www.promoplace.com/ws/ws.dll/ConnectAPI
 SAGE_API_VERSION=130
+
+# Optional - Memory System
+MEM0_API_KEY=your_mem0_api_key
 ```
 
 ### 3. Slack App Setup
@@ -114,9 +120,12 @@ vercel --prod
 - `@bot What's the weather like today?` (web search)
 - `@bot Tell me about our vacation policy` (knowledge base)
 - `@bot Find promotional water bottles` (product search)
+- `@bot Remember that I prefer brief responses` (memory storage)
+- `@bot What do you remember about me?` (memory retrieval)
 
 ### Advanced Features
 - **Context Awareness**: Bot reads thread/channel history for context
+- **Persistent Memory**: Learns and remembers user preferences across conversations
 - **Smart Tool Selection**: Automatically chooses the right tool for each query
 - **Status Updates**: Shows what the bot is doing in real-time
 - **Error Handling**: Graceful fallbacks for all operations
@@ -185,6 +194,12 @@ vercel logs                   # View deployment logs
 - Check API endpoint URL and version
 - Review rate limits and quotas
 
+### Memory System Issues
+- Check Mem0 API key in environment variables
+- Verify API key permissions at [app.mem0.ai](https://app.mem0.ai)
+- Test memory with: `@bot Remember that I like coffee`
+- Memory gracefully degrades when API unavailable
+
 ## 📚 Documentation
 
 - [CLAUDE.md](./claude.md) - Detailed technical documentation
@@ -204,6 +219,7 @@ MIT License - see [LICENSE](./LICENSE) file for details
 
 ---
 
-**Current Status**: ✅ Production Ready  
+**Current Status**: ✅ Production Ready with Persistent Memory  
 **Deployment**: Vercel  
-**Last Updated**: August 29, 2025
+**Last Updated**: September 2, 2025  
+**Version**: 1.2.0 - Added Mem0 memory integration

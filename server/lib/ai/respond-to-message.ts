@@ -14,6 +14,12 @@ import {
   getCategoriesAndThemesTool,
   vectorizeImageTool,
   vectorizerAccountTool,
+  searchMemoryTool,
+  saveMemoryTool,
+  getMemoryHistoryTool,
+  getAllMemoriesTool,
+  deleteMemoryTool,
+  addConversationToMemoryTool,
 } from "./tools";
 
 interface RespondToMessageOptions {
@@ -39,7 +45,7 @@ export const respondToMessage = async ({
 }: RespondToMessageOptions) => {
   try {
     const { text } = await generateText({
-      model: "openai/gpt-4o-mini",
+      model: "openai/gpt-4o",
       system: `
 			You are Slack Agent, a friendly and professional agent for Slack.
       Always gather context from Slack before asking the user for clarification.
@@ -101,7 +107,17 @@ export const respondToMessage = async ({
       - Always inform users about costs: preview mode (0.2 credits), production mode (1.0 credit), test mode (free).
       - If user uploads an image and mentions vectorization in any way, immediately call vectorizeImageTool.
 
-      9. Responding
+      9. Memory Management (Mem0)
+      - ALWAYS search existing memories before responding to provide personalized, context-aware responses.
+      - Use searchMemoryTool to find relevant past conversations, user preferences, and stored information.
+      - Automatically save important information using saveMemoryTool when users share preferences, important details, or context.
+      - Keywords that indicate memory relevance: "remember", "my preference", "I like", "I don't like", "always", "never", "usually"
+      - Save conversations to memory using addConversationToMemoryTool for important discussions or decisions.
+      - Use getAllMemoriesTool to understand complete user context when needed.
+      - Memory-first approach: Search memories → Use context → Respond → Save new information
+      - Always personalize responses based on retrieved memories and learned user patterns.
+
+      10. Responding
       - After fetching context, answer clearly and helpfully.
       - Suggest next steps if needed; avoid unnecessary clarifying questions if tools can answer.
       - Slack markdown does not support language tags in code blocks.
@@ -151,6 +167,12 @@ export const respondToMessage = async ({
         getCategoriesAndThemesTool,
         vectorizeImageTool,
         vectorizerAccountTool,
+        searchMemoryTool,
+        saveMemoryTool,
+        getMemoryHistoryTool,
+        getAllMemoriesTool,
+        deleteMemoryTool,
+        addConversationToMemoryTool,
       },
       prepareStep: () => {
         return {
@@ -169,6 +191,12 @@ export const respondToMessage = async ({
                 "getCategoriesAndThemesTool",
                 "vectorizeImageTool",
                 "vectorizerAccountTool",
+                "searchMemoryTool",
+                "saveMemoryTool",
+                "getMemoryHistoryTool",
+                "getAllMemoriesTool",
+                "deleteMemoryTool",
+                "addConversationToMemoryTool",
               ]
             : [
                 "getThreadMessagesTool",
@@ -184,6 +212,12 @@ export const respondToMessage = async ({
                 "getCategoriesAndThemesTool",
                 "vectorizeImageTool",
                 "vectorizerAccountTool",
+                "searchMemoryTool",
+                "saveMemoryTool",
+                "getMemoryHistoryTool",
+                "getAllMemoriesTool",
+                "deleteMemoryTool",
+                "addConversationToMemoryTool",
               ],
         };
       },

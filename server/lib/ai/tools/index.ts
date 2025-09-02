@@ -6,3 +6,4 @@ export * from "./web-search";
 export * from "./knowledge-search";
 export * from "./sage-connect";
 export * from "./vectorize-image";
+export * from "./memory-tools";

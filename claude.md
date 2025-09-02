@@ -2,13 +2,13 @@
 
 ## Project Overview
 
-This is a Slack bot application built with Nitro framework and integrated with multiple AI services and APIs. The bot provides intelligent responses, promotional product search, knowledge base queries, and web search capabilities.
+This is a Slack bot application built with Nitro framework and integrated with multiple AI services and APIs. The bot provides intelligent responses, promotional product search, knowledge base queries, web search capabilities, and persistent memory for personalized conversations.
 
 ## Tech Stack
 
 - **Framework**: Nitro (Universal JavaScript Server)
 - **Language**: TypeScript 5+
-- **AI Integration**: Vercel AI SDK with OpenAI GPT-4o-mini
+- **AI Integration**: Vercel AI SDK with OpenAI GPT-4o
 - **Slack Integration**: @slack/bolt with @vercel/slack-bolt
 - **Package Manager**: npm
 - **Deployment**: Vercel
@@ -17,6 +17,7 @@ This is a Slack bot application built with Nitro framework and integrated with m
 - **Product Catalog**: Sage Connect API
 - **Web Search**: Exa API
 - **Image Vectorization**: Vectorizer.ai API
+- **Memory Layer**: Mem0 AI for persistent conversation memory
 
 ## Project Structure
 
@@ -36,12 +37,14 @@ This is a Slack bot application built with Nitro framework and integrated with m
 │   │   │       ├── knowledge-search.ts
 │   │   │       ├── sage-connect.ts
 │   │   │       ├── vectorize-image.ts
+│   │   │       ├── memory-tools.ts
 │   │   │       └── ...
 │   │   ├── integrations/       # External service integrations
 │   │   │   ├── google-drive.ts
 │   │   │   ├── pinecone.ts
 │   │   │   ├── sage-connect.ts
 │   │   │   ├── vectorizer-ai.ts
+│   │   │   ├── mem0.ts
 │   │   │   └── document-processor.ts
 │   │   └── slack/              # Slack utilities
 │   │       └── utils.ts
@@ -97,6 +100,9 @@ SAGE_API_VERSION=130
 VECTORIZER_AI_API_ID=your_api_id
 VECTORIZER_AI_API_SECRET=your_api_secret
 
+# Mem0 Memory Integration
+MEM0_API_KEY=your_mem0_api_key
+
 # Optional: AI Gateway
 AI_GATEWAY_API_KEY=your_ai_gateway_key
 ```
@@ -145,7 +151,7 @@ vercel --prod
 ## Key Features
 
 ### 1. AI-Powered Responses
-- Uses OpenAI GPT-4o-mini for intelligent conversation
+- Uses OpenAI GPT-4o for intelligent conversation
 - Context-aware responses using Slack message history
 - Automatic status updates during processing
 
@@ -174,7 +180,14 @@ vercel --prod
 - Account status monitoring and credit tracking
 - Image token system for multi-format downloads at reduced cost
 
-### 6. Slack Integration
+### 6. Persistent Memory System
+- Long-term memory across conversations using Mem0 AI
+- Personalized responses based on user preferences and history
+- Automatic storage of important conversation details
+- Memory search and retrieval for context-aware interactions
+- Cross-session continuity and relationship building
+
+### 7. Slack Integration
 - App mentions and direct messages
 - Thread and channel message context
 - Chat title updates
@@ -200,8 +213,9 @@ vercel --prod
 2. **Knowledge Search Tool** - Query internal knowledge base
 3. **Sage Connect Tools** - Product catalog operations
 4. **Image Vectorization Tools** - Convert images to vector graphics
-5. **Slack Context Tools** - Retrieve message history
-6. **Status Tools** - Update agent status and chat titles
+5. **Memory Tools** - Store, search, and manage conversation memories
+6. **Slack Context Tools** - Retrieve message history
+7. **Status Tools** - Update agent status and chat titles
 
 ## Development Commands
 
@@ -234,6 +248,7 @@ vercel logs               # View deployment logs
 - [ ] OpenAI API key with sufficient credits
 - [ ] Knowledge base documents processed
 - [ ] **Vectorizer.ai API credentials configured**
+- [ ] **Mem0 API key configured for memory functionality**
 - [ ] **Slack bot permissions include `files:read` scope**
 - [ ] Bot permissions configured in Slack workspace
 
@@ -269,6 +284,13 @@ vercel logs               # View deployment logs
    - Check supported formats: JPG, PNG, GIF, BMP, TIFF
    - Ensure images are uploaded as file attachments, not pasted inline
 
+6. **Memory System Issues**
+   - Check Mem0 API key in Vercel environment variables
+   - Verify API key permissions at [app.mem0.ai](https://app.mem0.ai)
+   - Test memory functionality: "Remember that I prefer brief responses"
+   - Check memory search: "What do you remember about me?"
+   - Memory gracefully degrades when API unavailable
+
 ### Development Tips
 
 1. **Local Testing**
@@ -284,6 +306,7 @@ vercel logs               # View deployment logs
 3. **Performance**
    - Vector search responses cached automatically
    - Web search uses live crawling for fresh results
+   - Memory searches use relevance scoring for best results
    - AI responses stream for better user experience
 
 ## Architecture Notes
@@ -352,8 +375,8 @@ Currently, vectorized images are processed and stored on vectorizer.ai servers b
 
 ---
 
-**Current Deployment URL**: `https://dgw-slack-vercel-agent-b0lcobqn4-jordans-projects-608b7fba.vercel.app`
-**Slack Webhook**: `https://dgw-slack-vercel-agent-b0lcobqn4-jordans-projects-608b7fba.vercel.app/api/slack-verify`
+**Current Deployment URL**: `https://dgw-slack-vercel-agent-ek3o6gc6b-jordans-projects-608b7fba.vercel.app`
+**Slack Webhook**: `https://dgw-slack-vercel-agent-ek3o6gc6b-jordans-projects-608b7fba.vercel.app/api/slack-verify`
 
-Last Updated: August 29, 2025
-Version: 1.1.0 - Image Vectorization Feature Complete
+Last Updated: September 2, 2025
+Version: 1.2.0 - Added Mem0 persistent memory integration

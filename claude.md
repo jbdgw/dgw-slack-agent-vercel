@@ -150,26 +150,37 @@ vercel --prod
 
 ## Key Features
 
-### 1. AI-Powered Responses
-- Uses OpenAI GPT-4o for intelligent conversation
-- Context-aware responses using Slack message history
-- Automatic status updates during processing
+### 1. Trend Intelligence AI (Core Feature)
+- **Enhanced Exa Web Search**: Multi-platform trend discovery with date filtering, domain targeting, and neural search
+- **Company Research Tool**: Deep website crawling for brand values, mission, and culture analysis
+- **Trend-to-Brand Matching**: Connects viral products to client values using AI-powered analysis
+- **Industry Expertise**: Specialized for Healthcare, Education, Purpose-Driven Businesses, and Beverage industries
+- **Real-time Status Updates**: Live progress tracking during trend research
 
-### 2. Knowledge Base Search
+### 2. Enhanced Web Search & Trend Discovery
+- **Multi-Platform Search**: Simultaneous search across TikTok, Instagram, Reddit, industry sites
+- **Date Filtering**: `past_week` for hot trends, `past_3_months` for established trends
+- **Neural vs Keyword Search**: Semantic understanding of trend queries
+- **Domain Exclusion**: Filter out irrelevant or low-quality sources
+- **Trend-Focused Content Extraction**: Prioritizes trend-related information in results
+
+### 3. Company Research Intelligence
+- **Deep Website Crawling**: Comprehensive analysis of company websites
+- **Focus Areas**: Mission, values, culture, sustainability, diversity initiatives, recent news
+- **Brand Intelligence**: Perfect preparation for trend-to-brand alignment
+- **Multi-Source Analysis**: Combines official websites, news sources, and social presence
+
+### 4. Knowledge Base Search
 - Searches internal documents stored in Google Drive
 - Automatic document processing and chunking
 - Vector similarity search using Pinecone
 - Supports PDFs and Google Docs
 
-### 3. Promotional Product Search
+### 5. Promotional Product Search
 - Integration with Sage Connect API
 - Product search, details, and inventory checking
 - Category and theme exploration
-
-### 4. Web Search
-- Real-time web search using Exa API
-- Current events and news lookup
-- Domain-specific search capabilities
+- Trend-aligned product recommendations
 
 ### 5. Image Vectorization
 - Convert bitmap images (JPG, PNG, GIF, BMP, TIFF) to vector graphics (SVG, PDF, PNG)
@@ -209,13 +220,27 @@ vercel --prod
 
 ## AI Tools Available
 
-1. **Web Search Tool** - Search current web information
-2. **Knowledge Search Tool** - Query internal knowledge base
-3. **Sage Connect Tools** - Product catalog operations
-4. **Image Vectorization Tools** - Convert images to vector graphics
-5. **Memory Tools** - Store, search, and manage conversation memories
-6. **Slack Context Tools** - Retrieve message history
-7. **Status Tools** - Update agent status and chat titles
+### Core Trend Intelligence Tools
+1. **Enhanced Web Search Tool** - Multi-platform trend discovery with advanced filtering
+   - Date filtering: `past_week`, `past_month`, `past_3_months`, etc.
+   - Domain targeting: `includeDomains: ['tiktok.com', 'instagram.com', 'reddit.com']`
+   - Domain exclusion: `excludeDomains: ['spam-sites.com']`
+   - Neural vs keyword search modes
+   - Trend-focused content extraction
+
+2. **Company Research Tool** - Deep brand intelligence analysis
+   - Website crawling for mission, values, culture
+   - Sustainability and diversity focus areas
+   - Recent news and initiatives tracking
+   - Multi-source brand analysis
+
+### Supporting Tools
+3. **Knowledge Search Tool** - Query internal knowledge base
+4. **Sage Connect Tools** - Product catalog operations with trend alignment
+5. **Memory Tools** - Store, search, and manage conversation memories for trend learning
+6. **Image Vectorization Tools** - Convert images to vector graphics
+7. **Slack Context Tools** - Retrieve message history
+8. **Status Tools** - Update agent status and chat titles
 
 ## Development Commands
 
@@ -375,11 +400,18 @@ Currently, vectorized images are processed and stored on vectorizer.ai servers b
 
 ---
 
-**Current Deployment URL**: `https://dgw-slack-vercel-agent-1lbab8d20-jordans-projects-608b7fba.vercel.app`
-**Slack Webhook**: `https://dgw-slack-vercel-agent-1lbab8d20-jordans-projects-608b7fba.vercel.app/api/slack-verify`
+**Current Deployment URL**: `https://dgw-slack-vercel-agent-2x2c2ydb8-jordans-projects-608b7fba.vercel.app`
+**Slack Webhook**: `https://dgw-slack-vercel-agent-2x2c2ydb8-jordans-projects-608b7fba.vercel.app/api/slack-verify`
 
 Last Updated: September 2, 2025
-Version: 1.2.0 - Added Mem0 persistent memory integration
+Version: 1.3.0 - Enhanced Exa API Integration with Company Research Tool
+
+## Recent Updates (v1.3.0)
+- **Enhanced Web Search**: Added date filtering, multi-domain targeting, neural search, domain exclusion
+- **Company Research Tool**: Deep website crawling for brand intelligence and values analysis
+- **Improved Trend Intelligence**: Trend-focused content extraction and brand alignment
+- **Updated System Prompts**: Enhanced decision flows with company research integration
+- **Better Result Processing**: Smarter content extraction focusing on trend-relevant information
 
 ## 🧠 Memory System Details
 

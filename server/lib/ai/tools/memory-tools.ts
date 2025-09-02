@@ -4,8 +4,9 @@ import { mem0, type Message, type MemoryOptions } from "../../integrations/mem0"
 import type { ExperimentalContext } from "../respond-to-message";
 
 export const searchMemoryTool = tool({
+  name: "search_memory",
   description: "Search through past conversations and stored memories to find relevant context and information",
-  parameters: z.object({
+  inputSchema: z.object({
     query: z.string().describe("The search query to find relevant memories"),
     user_id: z.string().optional().describe("User ID to search memories for (if not provided, will use context)"),
     agent_id: z.string().optional().describe("Agent ID to search memories for"),
@@ -55,12 +56,13 @@ export const searchMemoryTool = tool({
 });
 
 export const saveMemoryTool = tool({
+  name: "save_memory",
   description: "Save important information, user preferences, or context to long-term memory",
-  parameters: z.object({
+  inputSchema: z.object({
     content: z.string().describe("The content or information to save to memory"),
     user_id: z.string().optional().describe("User ID to associate the memory with"),
     agent_id: z.string().optional().describe("Agent ID to associate the memory with"),
-    metadata: z.record(z.any()).optional().describe("Additional metadata to store with the memory"),
+    metadata: z.string().optional().describe("Additional metadata as JSON string"),
   }),
   execute: async ({ content, user_id, agent_id, metadata }, { experimental_context }) => {
     try {
@@ -85,7 +87,7 @@ export const saveMemoryTool = tool({
 
       const memoryOptions: MemoryOptions = {
         user_id: effectiveUserId,
-        metadata,
+        metadata: metadata ? JSON.parse(metadata) : undefined,
       };
 
       if (agent_id) {
@@ -112,8 +114,9 @@ export const saveMemoryTool = tool({
 });
 
 export const getMemoryHistoryTool = tool({
+  name: "get_memory_history",
   description: "Get the history of changes for a specific memory by its ID",
-  parameters: z.object({
+  inputSchema: z.object({
     memory_id: z.string().describe("The ID of the memory to get history for"),
   }),
   execute: async ({ memory_id }) => {
@@ -143,8 +146,9 @@ export const getMemoryHistoryTool = tool({
 });
 
 export const getAllMemoriesTool = tool({
+  name: "get_all_memories",
   description: "Get all memories for a user or agent to understand their complete context and preferences",
-  parameters: z.object({
+  inputSchema: z.object({
     user_id: z.string().optional().describe("User ID to get memories for"),
     agent_id: z.string().optional().describe("Agent ID to get memories for"), 
     limit: z.number().optional().default(20).describe("Maximum number of memories to return (default: 20)"),
@@ -193,8 +197,9 @@ export const getAllMemoriesTool = tool({
 });
 
 export const deleteMemoryTool = tool({
+  name: "delete_memory",
   description: "Delete a specific memory by its ID - use with caution",
-  parameters: z.object({
+  inputSchema: z.object({
     memory_id: z.string().describe("The ID of the memory to delete"),
   }),
   execute: async ({ memory_id }) => {
@@ -220,15 +225,16 @@ export const deleteMemoryTool = tool({
 });
 
 export const addConversationToMemoryTool = tool({
+  name: "add_conversation_to_memory",
   description: "Add an entire conversation thread to memory for context retention",
-  parameters: z.object({
+  inputSchema: z.object({
     messages: z.array(z.object({
       role: z.enum(['user', 'assistant', 'system']).describe("The role of the message sender"),
       content: z.string().describe("The content of the message"),
     })).describe("Array of messages in the conversation"),
     user_id: z.string().optional().describe("User ID to associate the conversation with"),
     agent_id: z.string().optional().describe("Agent ID to associate the conversation with"),
-    metadata: z.record(z.any()).optional().describe("Additional metadata about the conversation"),
+    metadata: z.string().optional().describe("Additional metadata about the conversation as JSON string"),
   }),
   execute: async ({ messages, user_id, agent_id, metadata }, { experimental_context }) => {
     try {
@@ -251,7 +257,7 @@ export const addConversationToMemoryTool = tool({
         channel: context?.channel,
         thread_ts: context?.thread_ts,
         message_count: messages.length,
-        ...metadata,
+        ...(metadata ? JSON.parse(metadata) : {}),
       };
 
       const memoryOptions: MemoryOptions = {

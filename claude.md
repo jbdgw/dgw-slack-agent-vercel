@@ -375,8 +375,37 @@ Currently, vectorized images are processed and stored on vectorizer.ai servers b
 
 ---
 
-**Current Deployment URL**: `https://dgw-slack-vercel-agent-ek3o6gc6b-jordans-projects-608b7fba.vercel.app`
-**Slack Webhook**: `https://dgw-slack-vercel-agent-ek3o6gc6b-jordans-projects-608b7fba.vercel.app/api/slack-verify`
+**Current Deployment URL**: `https://dgw-slack-vercel-agent-1lbab8d20-jordans-projects-608b7fba.vercel.app`
+**Slack Webhook**: `https://dgw-slack-vercel-agent-1lbab8d20-jordans-projects-608b7fba.vercel.app/api/slack-verify`
 
 Last Updated: September 2, 2025
 Version: 1.2.0 - Added Mem0 persistent memory integration
+
+## 🧠 Memory System Details
+
+### Memory Features Working:
+✅ **Persistent User Memory** - Each Slack user gets isolated memory storage  
+✅ **Automatic Context Saving** - Important conversation details saved automatically  
+✅ **Cross-Session Continuity** - Remembers preferences across different conversations  
+✅ **Personalized Responses** - Tailors responses based on learned user patterns  
+✅ **6 Memory Tools Available** - Complete memory management toolkit  
+
+### Memory Tools:
+1. **`searchMemoryTool`** - Find relevant past conversations and preferences
+2. **`saveMemoryTool`** - Store important user information manually  
+3. **`getAllMemoriesTool`** - Get complete user context and history
+4. **`getMemoryHistoryTool`** - Track changes to specific memories
+5. **`deleteMemoryTool`** - Remove specific memories (use with caution)
+6. **`addConversationToMemoryTool`** - Save entire conversation threads
+
+### Usage Examples:
+- `@bot Remember that I prefer brief responses`
+- `@bot What do you remember about me?`
+- `@bot My name is Jordan and I work in marketing`
+- Natural conversation - bot automatically learns and adapts
+
+### Technical Implementation:
+- **Mem0 AI Integration**: Professional memory layer service
+- **User Isolation**: Memories tagged with unique Slack user IDs
+- **Error Handling**: Gracefully degrades when API unavailable
+- **Schema Validation**: Fixed Zod schemas for AI SDK compatibility

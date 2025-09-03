@@ -15,7 +15,10 @@ export const searchMemoryTool = tool({
   execute: async ({ query, user_id, agent_id, limit }, { experimental_context }) => {
     try {
       if (!mem0.isEnabled()) {
-        return "Memory search is not available - Mem0 is not configured.";
+        return [{
+          role: "user" as const,
+          content: "Memory search is not available - Mem0 is not configured."
+        }];
       }
 
       const context = experimental_context as ExperimentalContext;
@@ -40,17 +43,26 @@ export const searchMemoryTool = tool({
       const results = await mem0.searchMemories(query, searchOptions);
 
       if (!results || results.results.length === 0) {
-        return `No relevant memories found for query: "${query}"`;
+        return [{
+          role: "user" as const,
+          content: `No relevant memories found for query: "${query}"`
+        }];
       }
 
       const memories = results.results.map((memory, index) => 
         `${index + 1}. ${memory.memory} ${memory.score ? `(relevance: ${memory.score.toFixed(2)})` : ''}`
       ).join('\n');
 
-      return `Found ${results.results.length} relevant memories:\n\n${memories}`;
+      return [{
+        role: "user" as const,
+        content: `Found ${results.results.length} relevant memories:\n\n${memories}`
+      }];
     } catch (error) {
       console.error('❌ Memory search failed:', error);
-      return `Memory search failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
+      return [{
+        role: "user" as const,
+        content: `Memory search failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      }];
     }
   },
 });
@@ -67,7 +79,10 @@ export const saveMemoryTool = tool({
   execute: async ({ content, user_id, agent_id, metadata }, { experimental_context }) => {
     try {
       if (!mem0.isEnabled()) {
-        return "Memory saving is not available - Mem0 is not configured.";
+        return [{
+          role: "user" as const,
+          content: "Memory saving is not available - Mem0 is not configured."
+        }];
       }
 
       const context = experimental_context as ExperimentalContext;
@@ -97,7 +112,10 @@ export const saveMemoryTool = tool({
       const result = await mem0.addMemories(messages, memoryOptions);
 
       if (!result || result.results.length === 0) {
-        return "Failed to save memory - no memories were created.";
+        return [{
+          role: "user" as const,
+          content: "Failed to save memory - no memories were created."
+        }];
       }
 
       const savedMemories = result.results
@@ -105,10 +123,18 @@ export const saveMemoryTool = tool({
         .map(r => `- ${r.memory}`)
         .join('\n');
 
-      return `Successfully saved ${result.results.length} memory(ies):\n\n${savedMemories}`;
+      return [{
+        role: "user" as const,
+        content: `Successfully saved ${result.results.length} memory(ies):\n\n${savedMemories}`
+      }];
     } catch (error) {
       console.error('❌ Memory saving failed:', error);
-      return `Memory saving failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
+      console.error('❌ Memory saving failed - Full error:', error);
+      console.error('❌ Error stack:', error instanceof Error ? error.stack : 'No stack');
+      return [{
+        role: "user" as const,
+        content: `Memory saving failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      }];
     }
   },
 });
@@ -122,7 +148,10 @@ export const getMemoryHistoryTool = tool({
   execute: async ({ memory_id }) => {
     try {
       if (!mem0.isEnabled()) {
-        return "Memory history is not available - Mem0 is not configured.";
+        return [{
+          role: "user" as const,
+          content: "Memory history is not available - Mem0 is not configured."
+        }];
       }
 
       console.log('📜 Getting memory history for ID:', memory_id);
@@ -130,17 +159,26 @@ export const getMemoryHistoryTool = tool({
       const history = await mem0.getMemoryHistory(memory_id);
 
       if (!history || history.length === 0) {
-        return `No history found for memory ID: ${memory_id}`;
+        return [{
+          role: "user" as const,
+          content: `No history found for memory ID: ${memory_id}`
+        }];
       }
 
       const historyString = history.map((entry, index) => 
         `${index + 1}. ${JSON.stringify(entry, null, 2)}`
       ).join('\n\n');
 
-      return `Memory history for ID ${memory_id}:\n\n${historyString}`;
+      return [{
+        role: "user" as const,
+        content: `Memory history for ID ${memory_id}:\n\n${historyString}`
+      }];
     } catch (error) {
       console.error('❌ Memory history retrieval failed:', error);
-      return `Memory history retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
+      return [{
+        role: "user" as const,
+        content: `Memory history retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      }];
     }
   },
 });
@@ -156,7 +194,10 @@ export const getAllMemoriesTool = tool({
   execute: async ({ user_id, agent_id, limit }, { experimental_context }) => {
     try {
       if (!mem0.isEnabled()) {
-        return "Memory retrieval is not available - Mem0 is not configured.";
+        return [{
+          role: "user" as const,
+          content: "Memory retrieval is not available - Mem0 is not configured."
+        }];
       }
 
       const context = experimental_context as ExperimentalContext;
@@ -180,7 +221,10 @@ export const getAllMemoriesTool = tool({
       const memories = await mem0.getAllMemories(memoryOptions);
 
       if (!memories || memories.length === 0) {
-        return `No memories found for user: ${effectiveUserId}${agent_id ? ` and agent: ${agent_id}` : ''}`;
+        return [{
+          role: "user" as const,
+          content: `No memories found for user: ${effectiveUserId}${agent_id ? ` and agent: ${agent_id}` : ''}`
+        }];
       }
 
       const memoryList = memories.map((memory, index) => {
@@ -188,10 +232,16 @@ export const getAllMemoriesTool = tool({
         return `${index + 1}. ${memory.memory} (Created: ${timestamp})`;
       }).join('\n');
 
-      return `Found ${memories.length} memories:\n\n${memoryList}`;
+      return [{
+        role: "user" as const,
+        content: `Found ${memories.length} memories:\n\n${memoryList}`
+      }];
     } catch (error) {
       console.error('❌ Memory retrieval failed:', error);
-      return `Memory retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
+      return [{
+        role: "user" as const,
+        content: `Memory retrieval failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      }];
     }
   },
 });
@@ -205,7 +255,10 @@ export const deleteMemoryTool = tool({
   execute: async ({ memory_id }) => {
     try {
       if (!mem0.isEnabled()) {
-        return "Memory deletion is not available - Mem0 is not configured.";
+        return [{
+          role: "user" as const,
+          content: "Memory deletion is not available - Mem0 is not configured."
+        }];
       }
 
       console.log('🗑️ Deleting memory with ID:', memory_id);
@@ -213,13 +266,22 @@ export const deleteMemoryTool = tool({
       const success = await mem0.deleteMemory(memory_id);
 
       if (success) {
-        return `Successfully deleted memory with ID: ${memory_id}`;
+        return [{
+          role: "user" as const,
+          content: `Successfully deleted memory with ID: ${memory_id}`
+        }];
       } else {
-        return `Failed to delete memory with ID: ${memory_id}`;
+        return [{
+          role: "user" as const,
+          content: `Failed to delete memory with ID: ${memory_id}`
+        }];
       }
     } catch (error) {
       console.error('❌ Memory deletion failed:', error);
-      return `Memory deletion failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
+      return [{
+        role: "user" as const,
+        content: `Memory deletion failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      }];
     }
   },
 });
@@ -239,7 +301,10 @@ export const addConversationToMemoryTool = tool({
   execute: async ({ messages, user_id, agent_id, metadata }, { experimental_context }) => {
     try {
       if (!mem0.isEnabled()) {
-        return "Conversation memory is not available - Mem0 is not configured.";
+        return [{
+          role: "user" as const,
+          content: "Conversation memory is not available - Mem0 is not configured."
+        }];
       }
 
       const context = experimental_context as ExperimentalContext;
@@ -272,7 +337,10 @@ export const addConversationToMemoryTool = tool({
       const result = await mem0.addMemories(messages as Message[], memoryOptions);
 
       if (!result || result.results.length === 0) {
-        return "Failed to save conversation to memory - no memories were created.";
+        return [{
+          role: "user" as const,
+          content: "Failed to save conversation to memory - no memories were created."
+        }];
       }
 
       const addedMemories = result.results
@@ -280,10 +348,17 @@ export const addConversationToMemoryTool = tool({
         .map(r => `- ${r.memory}`)
         .join('\n');
 
-      return `Successfully saved conversation with ${messages.length} messages. Created ${result.results.length} memories:\n\n${addedMemories}`;
+      return [{
+        role: "user" as const,
+        content: `Successfully saved conversation with ${messages.length} messages. Created ${result.results.length} memories:\n\n${addedMemories}`
+      }];
     } catch (error) {
       console.error('❌ Conversation memory saving failed:', error);
-      return `Conversation memory saving failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
+      console.error('❌ Conversation memory saving failed - Full error:', error);
+      return [{
+        role: "user" as const,
+        content: `Conversation memory saving failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      }];
     }
   },
 });

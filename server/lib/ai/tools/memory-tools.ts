@@ -19,7 +19,7 @@ export const searchMemoryTool = tool({
       }
 
       const context = experimental_context as ExperimentalContext;
-      const effectiveUserId = user_id || `slack_${context?.botId || 'unknown'}`;
+      const effectiveUserId = user_id || `slack_${context?.userId || 'unknown'}`;
       
       console.log('🔍 Executing memory search:', {
         query: query.substring(0, 50) + '...',
@@ -71,7 +71,7 @@ export const saveMemoryTool = tool({
       }
 
       const context = experimental_context as ExperimentalContext;
-      const effectiveUserId = user_id || `slack_${context?.botId || 'unknown'}`;
+      const effectiveUserId = user_id || `slack_${context?.userId || 'unknown'}`;
 
       console.log('💾 Saving memory:', {
         content: content.substring(0, 100) + '...',
@@ -160,7 +160,7 @@ export const getAllMemoriesTool = tool({
       }
 
       const context = experimental_context as ExperimentalContext;
-      const effectiveUserId = user_id || `slack_${context?.botId || 'unknown'}`;
+      const effectiveUserId = user_id || `slack_${context?.userId || 'unknown'}`;
 
       console.log('📚 Getting all memories:', {
         userId: effectiveUserId,
@@ -243,7 +243,7 @@ export const addConversationToMemoryTool = tool({
       }
 
       const context = experimental_context as ExperimentalContext;
-      const effectiveUserId = user_id || `slack_${context?.botId || 'unknown'}`;
+      const effectiveUserId = user_id || `slack_${context?.userId || 'unknown'}`;
 
       console.log('💬 Adding conversation to memory:', {
         messageCount: messages.length,

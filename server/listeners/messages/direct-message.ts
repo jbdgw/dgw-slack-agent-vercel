@@ -13,7 +13,7 @@ export const directMessageCallback = async ({
   context,
 }: AllMiddlewareArgs & SlackEventMiddlewareArgs<"message">) => {
   // @ts-expect-error
-  const { channel, thread_ts, text } = message;
+  const { channel, thread_ts, text, user } = message;
   const { botId } = context;
 
   if (!text) return;
@@ -45,6 +45,7 @@ export const directMessageCallback = async ({
       channel,
       thread_ts,
       botId,
+      userId: user,
       isDirectMessage: true,
     });
 

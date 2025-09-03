@@ -13,7 +13,7 @@ const appMentionCallback = async ({
   logger,
   context,
 }: AllMiddlewareArgs & SlackEventMiddlewareArgs<"app_mention">) => {
-  const { channel, thread_ts, ts } = event;
+  const { channel, thread_ts, ts, user } = event;
 
   try {
     await MessageState.setProcessing({
@@ -47,6 +47,7 @@ const appMentionCallback = async ({
       channel,
       thread_ts,
       botId: context.botId,
+      userId: user,
     });
 
     await say({

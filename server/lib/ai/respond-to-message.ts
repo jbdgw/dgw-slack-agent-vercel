@@ -29,12 +29,14 @@ interface RespondToMessageOptions {
   channel?: string;
   thread_ts?: string;
   botId?: string;
+  userId?: string;
 }
 
 export type ExperimentalContext = {
   channel?: string;
   thread_ts?: string;
   botId?: string;
+  userId?: string;
 };
 
 export const respondToMessage = async ({
@@ -43,6 +45,7 @@ export const respondToMessage = async ({
   channel,
   thread_ts,
   botId,
+  userId,
 }: RespondToMessageOptions) => {
   try {
     const { text } = await generateText({
@@ -424,6 +427,7 @@ export const respondToMessage = async ({
         channel,
         thread_ts,
         botId,
+        userId,
       } as ExperimentalContext,
     });
     return text;

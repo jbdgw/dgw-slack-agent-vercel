@@ -400,13 +400,19 @@ Currently, vectorized images are processed and stored on vectorizer.ai servers b
 
 ---
 
-**Current Deployment URL**: `https://dgw-slack-vercel-agent-buku3kokp-jordans-projects-608b7fba.vercel.app`
-**Slack Webhook**: `https://dgw-slack-vercel-agent-buku3kokp-jordans-projects-608b7fba.vercel.app/api/slack-verify`
+**Current Deployment URL**: `https://dgw-slack-vercel-agent-eheo4r1x5-jordans-projects-608b7fba.vercel.app`
+**Slack Webhook**: `https://dgw-slack-vercel-agent-eheo4r1x5-jordans-projects-608b7fba.vercel.app/api/slack-verify`
 
 Last Updated: September 2, 2025
-Version: 1.3.0 - Enhanced Exa API Integration with Company Research Tool
+Version: 1.3.1 - CRITICAL Memory System Privacy Fix
 
-## Recent Updates (v1.3.0)
+## Recent Updates (v1.3.1) 🚨 CRITICAL FIX
+- **🛡️ Memory Privacy Fix**: Fixed critical bug where all users shared the same memory space
+- **👤 User Isolation**: Each user now has private, isolated memory (previously all users saw each other's memories)
+- **✅ Memory System Working**: "Remember I prefer brief responses" now works correctly per user
+- **🔧 Context Improvements**: Added proper user ID handling throughout the system
+
+## Previous Updates (v1.3.0)
 - **Enhanced Web Search**: Added date filtering, multi-domain targeting, neural search, domain exclusion
 - **Company Research Tool**: Deep website crawling for brand intelligence and values analysis
 - **Improved Trend Intelligence**: Trend-focused content extraction and brand alignment
